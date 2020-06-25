@@ -20,9 +20,28 @@ gradle-app.setting
 .gradletasknamecache
 
 
+### VisualStudioCode ###
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+
 ### my stuff ###
 *.bak*
 bak/
 *.gz
 *.tgz
 myREADME
+testdir/*
+
+# how does these get created?!?  gradle?  what do they do
+.project
+.classpath
+.settings/
