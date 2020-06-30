@@ -16,7 +16,9 @@ import com.qetuop.bookclub.model.Book;
 @RepositoryRestResource(collectionResourceRel = "books", path = "books") 
 public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
 
+    // orig CrudRepository way
   //List<Book> findByAuthor(String author);
+
   List<Book> findByAuthor(@Param("author") String author);
 
   Book findById(long id);

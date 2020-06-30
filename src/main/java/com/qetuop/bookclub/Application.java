@@ -1,7 +1,10 @@
 package com.qetuop.bookclub;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.lang.invoke.MethodHandles;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +17,8 @@ import com.qetuop.bookclub.model.Book;
 @SpringBootApplication
 public class Application {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    //private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public static void main(String[] args) {
         log.info("\n\n*** Starting Application...\n\n");
@@ -33,6 +37,12 @@ public class Application {
             repository.save(new Book("Kim", "Bauer"));
             repository.save(new Book("David", "Palmer"));
             repository.save(new Book("Michelle", "Dessler"));
+
+            // update one book
+            List<Book> books = repository.findByAuthor("Jack Bauer");
+            System.out.println("books size:" + books.size());
+            //book.setTitle("24b");
+            //repository.save(book);
       
             // fetch all customers
             log.info("Books found with findAll():");
