@@ -1,5 +1,6 @@
 package com.qetuop.bookclub.model;
 
+import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,11 +8,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-// import lombok.Data;  add @Data before class to get auto generated getter, setters, etc https://projectlombok.org/features/Data
-// import lombok.NoArgsConstructor;
+import lombok.Data;  //add @Data before class to get auto generated getter, setters, etc https://projectlombok.org/features/Data
+import lombok.NoArgsConstructor;
 
-
+@Data
 @Entity // This tells Hibernate to make a table out of this class, use @Table(name = "books") to specify the table name
+@Table(name = "books")
 public class Book {
 
     @Id
@@ -19,39 +21,32 @@ public class Book {
     private Long id;
     private String title;
     private String author;
+    private String path;
+    private String cover;
 
-    // needed for JPA
+    @Lob
+    private Byte[] image;
+
+    // needed for JPA, NoArgsConstructor created by lombok
     protected Book() {}
 
-    public Book(String title, String author) {
+    public Book(String title, String author, String path, String cover) {
         this.title = title;
         this.author = author;
+        this.path = path;
+        this.cover = cover;
+        this.image = null;// TODO: what to set to
     }
 
-    @Override
-    public String toString() {
-        return String.format("Book[id=%d, title='%s', author='%s']",
-        id, title, author);
-    }
-
-    public Long getId() {
-        return id;
+    // getters/setters/hash/toString created by lombok
+    /*
+    ENSURE "annotationProcessor 'org.projectlombok:lombok'"" is in gradle else stuff doesn't work!
+    public String getAuthor() {
+        return author;
     }
 
     public String getTitle() {
         return title;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-    
+    */
 }

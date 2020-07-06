@@ -1,20 +1,29 @@
 package com.qetuop.bookclub;
 
 import java.util.List;
+import java.util.stream.Stream;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import com.qetuop.bookclub.storage.StorageProperties;
+import com.qetuop.bookclub.storage.StorageService;
+import com.qetuop.bookclub.service.ImageService;
 
 import com.qetuop.bookclub.repository.BookRepository;
 import com.qetuop.bookclub.model.Book;
 
 @SpringBootApplication
+@EnableConfigurationProperties(StorageProperties.class)
 public class Application {
 
     //private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -27,7 +36,7 @@ public class Application {
 
         log.info("\n\n*** Application Done!\n\n");
     }    	
-
+/*
     @Bean
 	public CommandLineRunner demo(BookRepository repository) {
         return (args) -> {
@@ -68,36 +77,61 @@ public class Application {
             log.info("");
         };
       }
+*/
 
-    /*  
-    @Bean
-    public ApplicationRunner init(BookRepository repository) {
-
+@Bean
+	CommandLineRunner init(StorageService storageService, BookRepository repository, ImageService imageService) {
         String[][] data = {
-            {"sea", "Andrew", "300.12", "NDK"},
-            {"creek", "Andrew", "100.75", "Piranha"},
-            {"loaner", "Andrew", "75", "Necky"}
+            {"Dune", "Frank Herbert", "audio books/Frank Herbert/Dune - 1", "Dune Messiah-Cover.jpg"},
+            {"Dune Messiah", "Frank Herbert", "audio books/Frank Herbert/Dune Messiah - 2", ""},
+            {"The Opal Affiar", "Eoin Coffer", "foo", "bar"}
         };
 
+        return (args) -> {
+			storageService.deleteAll();
+			storageService.init();
+
+                Stream.of(data).forEach(array -> {        
+                    Book book = new Book(
+                        array[0],
+                        array[1],
+                        array[2],
+                        array[3]
+                    );
+                    repository.save(book);
+    
+            });
+        };
+	}
+     /*
+    @Bean
+    public ApplicationRunner init(BookRepository repository) {
+        FileList fl = new FileList();
+        //fl.printFiles();
+
+        String[][] data = {
+            {"Dune", "Frank Herbert", "audio books/Frank Herbert/Dune - 1", "Dune Messiah-Cover.jpg"},
+            {"Dune Messiah", "Frank Herbert", "audio books/Frank Herbert/Dune Messiah - 2", ""},
+            {"The Opal Affiar", "Eoin Coffer", "foo", "bar"}
+        };
+        
         return args -> {
         Stream.of(data).forEach(array -> {
-            try {
-            Kayak kayak = new Kayak(
+        
+            Book book = new Book(
                 array[0],
                 array[1],
-                    NumberFormat.getInstance().parse(array[2]),
+                array[2],
                 array[3]
             );
-            repository.save(kayak);
-            }
-            catch (ParseException e) {
-            e.printStackTrace();
-            }
+            repository.save(book);
+ 
         });
         repository.findAll().forEach(System.out::println);
         };
     }
     */
+    
   
       
 }

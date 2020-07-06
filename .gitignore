@@ -40,6 +40,7 @@ bak/
 *.tgz
 myREADME
 testdir/*
+upload-dir/*
 
 # how does these get created?!?  gradle?  what do they do
 .project
