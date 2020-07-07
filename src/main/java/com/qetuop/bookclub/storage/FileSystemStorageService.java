@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileSystemStorageService implements StorageService {
 
 	private final Path rootLocation;
-	//private final ImageService imageService;
 
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {

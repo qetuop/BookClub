@@ -1,105 +1,71 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {
-  box-sizing: border-box;
-}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-/* Float four columns side by side */
-.column {
-  float: left;
-  width: 25%;
-  padding: 0 10px;
-}
+    /* Float four columns side by side */
+    .column {
+      float: left;
+      width: 25%;
+      padding: 0 10px;
+    }
 
-/* Remove extra left and right margins, due to padding */
-.row {margin: 0 -5px;}
+    /* Remove extra left and right margins, due to padding */
+    .row {
+      margin: 0 -5px;
+    }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
 
-/* Responsive columns */
-@media screen and (max-width: 600px) {
-  .column {
-    width: 100%;
-    display: block;
-    margin-bottom: 20px;
-  }
-}
+    /* Responsive columns */
+    @media screen and (max-width: 600px) {
+      .column {
+        width: 100%;
+        display: block;
+        margin-bottom: 20px;
+      }
+    }
 
-/* Style the counter cards */
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
-}
-</style>
+    /* Style the counter cards */
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      text-align: center;
+      background-color: #f1f1f1;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Responsive Column Cards</h2>
-<p>Resize the browser window to see the effect.</p>
-<br>
-<img src="file:///home/brian/Projects/BookClub/testdir/audio%20books/Frank%20Herbert/Dune/Dune%20Messiah%20-%202/Dune%20Messiah.jpg" alt="Dune Messiah">
-<img src="foo.jpg" alt="FOO"> 
-<br>
-<img src="http://localhost:8080/images/foo.jpg" alt="Bar">
-<br>
-<img src="http://localhost:8080/upload-dir/plexcard.png" alt="PLEX">
-<br>
-<img src="/files/plexcard.png" alt="PLEX 2">
-<br>
-<img src="/image/plexcard.png" alt="PLEX 3">
-<br>
-<img src="/books/1/cover" alt="PLEX 4">
-<br>
-
-<div class="row">
-  <div class="column">
-    <div class="card">
-      <h3>Card 1</h3>
-      <p>Some text</p>
-      <p>Some text</p>
-    </div>
-  </div>
+<tr th:each="book : ${books}">
 
   <div class="column">
-    <div class="card">
-      <h3>Card 2</h3>
-      <p>Some text</p>
-      <p>Some text</p>
-    </div>
-  </div>
-  
-  <div class="column">
-    <div class="card">
-      <h3>Card 3</h3>
-      <p>Some text</p>
-      <p>Some text</p>
-    </div>
-  </div>
-  
-  <div class="column">
-    <div class="card" style="width: 18rem;">
-        <img src="/files/plexcard.png" class="card-img-top" alt="plexcard.png">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
+    <div class="card" style="width: 10rem;">
+      <img th:src="@{/books/{id}/cover(id=${book.id})}" class="card-img-top" alt=COVER width="100" height="150">
+      <div class="card-body">
+        <p class="card-title" th:text="${book.title}">TITLE</p>
+        <h5 class="card-text" th:text="${book.author}">AUTHOR</h5>
       </div>
-</div>
+    </div>
+  </div>
+
+</tr>
 
 </body>
+
 </html>
