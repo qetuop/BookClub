@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ import com.qetuop.bookclub.model.Book;
 
 @Component
 public class AppStartupRunner implements ApplicationRunner {
-    private static final Logger LOG = LoggerFactory.getLogger(AppStartupRunner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static int counter;
 
     @Autowired
@@ -40,15 +41,14 @@ public class AppStartupRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        LOG.info("Application started with option names : {}", args.getOptionNames());
-        LOG.info("Increment counter");
-        
+        LOG.info("AppStartupRunner started with option names : {}", args.getOptionNames());
+       
         
         final String[][] data = { 
             { "Dune", "Frank Herbert", "audio books/Frank Herbert/Dune/Dune - 1/", "Dune.jpg" },
             { "Dune Messiah", "Frank Herbert", "audio books/Frank Herbert/Dune/Dune Messiah - 2/", "Dune Messiah-Cover.jpg" } };
 
-        final String rootDir = "/home/brian/Projects/BookClub/testdir/";
+        final String rootDir = "/home/brian/Projects/testdir/";
 
         storageService.deleteAll();
         storageService.init();
@@ -90,5 +90,5 @@ public class AppStartupRunner implements ApplicationRunner {
                 repository.save(book);
 
         });
-    }
+    } // run
 }
