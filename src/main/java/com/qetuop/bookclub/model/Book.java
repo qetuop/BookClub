@@ -23,7 +23,9 @@ public class Book {
     private String author;
     private String path;
     private String cover;
-    private String foo;
+    //private Boolean isSeries;
+    private String seriesName;
+    private Integer seriesNumber;
 
     @Lob
     private Byte[] image;
@@ -31,12 +33,14 @@ public class Book {
     // needed for JPA, NoArgsConstructor created by lombok
     protected Book() {}
 
-    public Book(String title, String author, String path, String cover, Byte[] image) {
+    public Book(String title, String author, String path, String cover, Byte[] image, String seriesName, int seriesNumber) {
         this.title = title;
         this.author = author;
         this.path = path;
         this.cover = cover;
         this.image = image.clone();// TODO: what to set to
+        this.seriesName = seriesName;
+        this.seriesNumber = seriesNumber;
     }
 
     // getters/setters/hash/toString created by lombok
