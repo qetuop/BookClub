@@ -49,3 +49,6 @@ upload-dir/*
 .project
 .classpath
 .settings/
+
+### eclipse
+.apt_generated/
