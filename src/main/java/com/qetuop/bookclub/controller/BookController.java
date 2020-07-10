@@ -88,6 +88,8 @@ public class BookController {
     @GetMapping(path="/books/{id}/cover")
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
         Book book = bookService.findById(Long.valueOf(id));
+        
+        System.out.println("COVER ID:"+Long.valueOf(id)+100);
 
         if (book.getImage() != null) {
             byte[] byteArray = new byte[book.getImage().length];

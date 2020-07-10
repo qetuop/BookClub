@@ -36,6 +36,14 @@ gradle-app.setting
 ### ???
 bin/*
 
+# how does these get created?!?  gradle?  what do they do
+.project
+.classpath
+.settings/
+
+### eclipse
+.apt_generated/
+
 ### my stuff ###
 *.bak*
 bak/
@@ -45,10 +53,8 @@ myREADME
 testdir/*
 upload-dir/*
 
-# how does these get created?!?  gradle?  what do they do
-.project
-.classpath
-.settings/
+src/main/resources/static/images/empty_bookcase.jpg
+src/main/resources/static/images/empty_bookcase_2.jpg
+src/main/resources/templates/empty_bookcase_2.jpg
+    
 
-### eclipse
-.apt_generated/

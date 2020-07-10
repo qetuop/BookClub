@@ -72,7 +72,7 @@ public class AppStartupRunner implements ApplicationRunner {
 
 			String tmpString = fullPathString.replace(rootDir, "");
 			String pattern = Pattern.quote(System.getProperty("file.separator"));
-			String[] splitList = tmpString.toString().split(pattern);
+			String[] splitList = tmpString.split(pattern);
 
 			System.out.println("\t\t*" + StringUtils.join(splitList, "|") +"*");
 
@@ -92,7 +92,8 @@ public class AppStartupRunner implements ApplicationRunner {
 
 			author = splitList[0];
 
-			System.out.println("AUTHOR: " + author + "," + splitList[1]);
+			//System.out.println("AUTHOR: " + author + "," + splitList[1]);
+			
 			// HACK check - ignore these dirs TODO: fix this
 			if ( ignoreList.contains(author)) {
 				continue;
@@ -114,7 +115,7 @@ public class AppStartupRunner implements ApplicationRunner {
 				if ( titleFull.matches(".*-.*") ) {
 
 					// TODO: once i've properly named dir/files - may need to handle anyways
-					String[] splitTitle = titleFull.toString().split("-");
+					String[] splitTitle = titleFull.split("-");
 
 
 					//System.out.println("\t\t" + StringUtils.join(splitTitle, "|"));
@@ -123,7 +124,7 @@ public class AppStartupRunner implements ApplicationRunner {
 
 				}
 				else if ( titleFull.matches(".*\\d.*") ) {
-					String[] splitTitle = titleFull.toString().split(" ");
+					String[] splitTitle = titleFull.split(" ");
 					String seriesNumberStr = splitTitle[splitTitle.length-1];
 					seriesNumber = Integer.parseInt(seriesNumberStr);
 					//System.out.println("SERIES NUM: " + seriesNumber);
