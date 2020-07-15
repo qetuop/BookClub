@@ -44,6 +44,9 @@ bin/*
 ### eclipse
 .apt_generated/
 
+### IntelliJ IDEA
+.idea/
+
 ### my stuff ###
 *.bak*
 bak/

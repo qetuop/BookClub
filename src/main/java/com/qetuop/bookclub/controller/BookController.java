@@ -1,7 +1,12 @@
 package com.qetuop.bookclub.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Comparator;
 
+import com.qetuop.bookclub.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,12 +23,14 @@ import org.apache.commons.io.IOUtils;
 
 import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.service.IBookService;
+import com.qetuop.bookclub.Scanner;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +57,14 @@ import com.qetuop.bookclub.service.BookService;
 public class BookController {
     
     private final StorageService storageService;
-    private final BookService bookService;    
+    private final BookService bookService;
+    private final BookRepository bookRepository;
     
     @Autowired
-	public BookController(StorageService storageService, BookService bookService) {
+	public BookController(StorageService storageService, BookService bookService, BookRepository bookRepository) {
 		this.storageService = storageService;
 		this.bookService = bookService;
+		this.bookRepository = bookRepository;
     }    
 
     @GetMapping("/")
@@ -89,7 +98,7 @@ public class BookController {
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
         Book book = bookService.findById(Long.valueOf(id));
         
-        System.out.println("COVER ID:"+Long.valueOf(id)+100);
+        System.out.println("COVER ID:"+book.getSeriesName());
 
         if (book.getImage() != null) {
             byte[] byteArray = new byte[book.getImage().length];
@@ -137,8 +146,20 @@ public class BookController {
 
 
 
+    @PostMapping("/scan")
+    public String scan() {
+        System.out.println("HERE:scan/ ");
+        Scanner scanner = new Scanner(storageService, bookRepository);
+        scanner.scan();
+        return "redirect:/";
+    }
 
 
+    @GetMapping("/scan")
+    public String scan2() {
+        System.out.println("HERE:GETscan/ ");
+        return "redirect:/";
+    }
     @GetMapping("/showBooks")
     public String findBooks(Model model) {
 
@@ -147,9 +168,44 @@ public class BookController {
         model.addAttribute("books", books);
 
         //return "showBooks";
-        return "showCards";
+        return "showBooks";
 
     }
+
+	@GetMapping("/showSeries")
+	public String showSeries(Model model) {
+
+		List<Book> books = (List<Book>) bookService.findAll();
+
+		HashMap<String, ArrayList<Book>> seriesMap = new HashMap<String, ArrayList<Book>>();
+
+		for (Book book : books) {
+			System.out.println(book.getSeriesName());
+			String seriesName = book.getSeriesName();
+
+			if ( seriesName != null ) {
+
+				// add this book to the list, sort on series number
+				if ( seriesMap.containsKey(seriesName) ) {
+					ArrayList<Book> bookList = seriesMap.get(seriesName);
+					bookList.add(book);
+					bookList.sort(Comparator.comparing(Book::getSeriesNumber));
+				}
+				else {
+					seriesMap.put(seriesName, new ArrayList<Book>(Arrays.asList(book)));
+				}
+			} // series book
+		} // for each book
+
+		System.out.println("seriesMap size: " + seriesMap.size());
+
+
+		model.addAttribute("seriesMap", seriesMap);
+
+		//return "showBooks";
+		return "showSeries";
+
+	}
 
 
 

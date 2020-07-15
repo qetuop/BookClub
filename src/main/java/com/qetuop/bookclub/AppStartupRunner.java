@@ -50,11 +50,11 @@ public class AppStartupRunner implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		LOG.info("AppStartupRunner::print files");
-
+		LOG.info("AppStartupRunner::run");
+/*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
 		String rootDir = "/home/brian/Projects/testdir/audio books/";       
-		//rootDir = "/media/NAS/audiobooks/";
+		rootDir = "/media/NAS/audiobooks/";
 
 		List<Path> fileWithName = fileList.printFiles(rootDir);
 
@@ -66,7 +66,7 @@ public class AppStartupRunner implements ApplicationRunner {
 
 
 		for (Path filePath : fileWithName) {
-			System.out.println("\n------New file: " + filePath);            
+			System.out.println("------New file: " + filePath);
 
 			String fullPathString = filePath.toString().strip();
 
@@ -88,7 +88,7 @@ public class AppStartupRunner implements ApplicationRunner {
 			String cover = null; // save largest image == replace if necessary
 			Byte[] image = null;
 			String seriesName = null;
-			int seriesNumber = 0;
+			float seriesNumber = 0;
 
 			author = splitList[0];
 
@@ -120,13 +120,13 @@ public class AppStartupRunner implements ApplicationRunner {
 
 					//System.out.println("\t\t" + StringUtils.join(splitTitle, "|"));
 					title = splitTitle[0].strip();
-					seriesNumber = Integer.parseInt(splitTitle[1].strip());
+					seriesNumber = Float.parseFloat(splitTitle[1].strip());
 
 				}
 				else if ( titleFull.matches(".*\\d.*") ) {
 					String[] splitTitle = titleFull.split(" ");
 					String seriesNumberStr = splitTitle[splitTitle.length-1];
-					seriesNumber = Integer.parseInt(seriesNumberStr);
+					seriesNumber = Float.parseFloat(seriesNumberStr);
 					//System.out.println("SERIES NUM: " + seriesNumber);
 					title = titleFull.substring(0, titleFull.indexOf(seriesNumberStr)-1);					
 				}
@@ -191,7 +191,9 @@ public class AppStartupRunner implements ApplicationRunner {
 			//String simpleFileName = file.getName();
 			//System.out.println("\t"+simpleFileName);
 		}
-	}
+
+ */
+	} // run
 
 	/*
 	@Override

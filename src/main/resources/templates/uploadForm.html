@@ -1,5 +1,16 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <body>
+<a href="showBooks">Show Books</a>
+<br>
+<a href="showSeries">Show Series</a>
+<br>
+<div>
+	<form method="POST" action="/scan">
+		<p><input type="submit" value="Scan" /></p>
+	</form>
+</div>
+
+
 
 	<div th:if="${message}">
 		<h2 th:text="${message}"/>

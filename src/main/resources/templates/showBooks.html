@@ -1,25 +1,81 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Books</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    
-    <body>
-        <h2>List of books</h2>
+<html xmlns:th="https://www.thymeleaf.org">
 
-        <table>
-            <tr>
-                <th>Author</th>
-                <th>Title</th>
-            </tr>
-            
-            <tr th:each="book : ${books}">
-                <td th:text="${book.author}">Author</td>
-                <td th:text="${book.title}">Title</td>
-            </tr>
-        </table>
+<head>
 
-    </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: #512121;
+}
+
+/* Float four columns side by side */
+.column {
+	float: left;
+	width: 15%;
+	padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {
+	margin: 0 -5px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+	.column {
+		width: 100%;
+		display: block;
+		margin-bottom: 20px;
+	}
+}
+
+/* Style the counter cards */
+.card {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	padding: 16px;
+	text-align: left;
+	background-color: #f1f1f1;
+}
+</style>
+
+</head>
+
+<body>
+
+<tr th:each="book : ${books}">
+
+    <div class="column">
+        <div class="card" style="width: 10rem;">
+            <img th:src="@{/books/{id}/cover(id=${book.id})}"
+                 class="card-img-top" alt=COVER width="100" height="150">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${book.title}">TITLE</h5>
+                <h5 class="card-text" th:text="${book.author}">AUTHOR</h5>
+
+                <div th:if="${book.seriesName}">
+                    <h5 class="card-text"
+                        th:text="${book.seriesName} + ' (' + ${book.seriesNumber} + ')'">SERIES</h5>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</tr>
+
+</body>
+
 </html>

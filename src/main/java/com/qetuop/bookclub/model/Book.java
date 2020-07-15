@@ -25,7 +25,7 @@ public class Book {
     private String cover;
     //private Boolean isSeries;
     private String seriesName;
-    private Integer seriesNumber;
+    private Float seriesNumber;
 
     @Lob
     private Byte[] image;
@@ -33,7 +33,7 @@ public class Book {
     // needed for JPA, NoArgsConstructor created by lombok
     protected Book() {}
 
-    public Book(String title, String author, String path, String cover, Byte[] image, String seriesName, int seriesNumber) {
+    public Book(String title, String author, String path, String cover, Byte[] image, String seriesName, float seriesNumber) {
         this.title = title;
         this.author = author;
         this.path = path;
