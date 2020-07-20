@@ -11,13 +11,13 @@
 
 body {
 	font-family: Arial, Helvetica, sans-serif;
-	background: #999966;
+	background: #512121;
 }
 
 /* Float four columns side by side */
 .column {
 	float: left;
-	width: 10%;
+	width: 15%;
 	padding: 0 10px;
 }
 
@@ -34,7 +34,7 @@ body {
 }
 
 /* Responsive columns */
-@media screen and (max-width: 100px) {
+@media screen and (max-width: 600px) {
 	.column {
 		width: 100%;
 		display: block;
@@ -45,10 +45,10 @@ body {
 /* Style the counter cards */
 .card {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-	padding: 10px;
+	padding: 0px;
 	text-align: left;
-	background-color: #999966;
-	width: 120px;
+	background-color: #f1f1f1;
+	width:100px;
 }
 
 p {
@@ -58,41 +58,31 @@ p {
   width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 10px;
 }
-
-    </style>
+</style>
 
 </head>
 
 <body>
 
-<tr th:each="book : ${books}">
 
     <div class="column">
         <div class="card">
             <img th:src="@{/books/{id}/cover(id=${book.id})}"
                  class="card-img-top" alt=COVER width="100" height="150">
-            <p class="card-body">
-                <a th:href="@{/book/{id}(id=${book.id})}">
-            <p class="card-title" th:text="${book.title}">TITLE</p></a>
-            <p class="card-text" th:text="${book.author}">AUTHOR</p>
+            <div class="card-body">
+                <p class="card-title" th:text="${book.title}">TITLE</p>
+                <p class="card-text" th:text="${book.author}">AUTHOR</p>
 
-            <div th:if="${book.seriesName}">
-                <th:block
-                        th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
-                    <p class="card-text" th:text="${book.seriesName} + ' ('
-                        + ${result}
-                        + ')'">SERIES</p>
-                </th:block>
+                <div th:if="${book.seriesName}">
+                    <p class="card-text"
+                        th:text="${book.seriesName} + ' (' + ${book.seriesNumber} + ')'">SERIES</p>
+                </div>
+
             </div>
-
-
         </div>
     </div>
-    </div>
 
-</tr>
 
 </body>
 

@@ -39,18 +39,21 @@ public class AppStartupRunner implements ApplicationRunner {
 
 	@Autowired
 	public StorageService storageService;
-	public BookRepository repository;
+	public BookRepository bookRepository;
 
 	public FileList fileList = new FileList();
 
-	public AppStartupRunner(StorageService storageService, BookRepository repository) {
+	public AppStartupRunner(StorageService storageService, BookRepository bookRepository) {
 		this.storageService = storageService;
-		this.repository = repository;
+		this.bookRepository = bookRepository;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		LOG.info("AppStartupRunner::run");
+
+		Scanner scanner = new Scanner(storageService, bookRepository);
+		scanner.scan();
 /*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
 		String rootDir = "/home/brian/Projects/testdir/audio books/";       

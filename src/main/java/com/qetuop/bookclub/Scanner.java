@@ -48,6 +48,10 @@ public class Scanner {
     }
 
     public void scan() {
+        // TODO: this is temporary
+        storageService.deleteAll();
+        storageService.init();
+
         // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
         String rootDir = "/home/brian/Projects/testdir/audio books/";
         //rootDir = "/media/NAS/audiobooks/";
@@ -58,7 +62,7 @@ public class Scanner {
         // link to the book object itself then add all at once to repo?  TODO: do that
         HashMap<Integer, Long> bookMap = new HashMap<Integer, Long>();
 
-        List<String> ignoreList = new ArrayList<String>(Arrays.asList("#recycle", "_temp", "_organize", "Warhammer"));
+        List<String> ignoreList = new ArrayList<String>(Arrays.asList("#recycle", "_temp", "_organize", "Warhammer", "_cleanup"));
 
 
         for (Path filePath : fileWithName) {
@@ -112,7 +116,6 @@ public class Scanner {
 
                     // TODO: once i've properly named dir/files - may need to handle anyways
                     String[] splitTitle = titleFull.split("-");
-
 
                     //System.out.println("\t\t" + StringUtils.join(splitTitle, "|"));
                     title = splitTitle[0].strip();

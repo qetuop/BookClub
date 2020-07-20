@@ -1,10 +1,7 @@
 package com.qetuop.bookclub;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +39,7 @@ public class FileList {
         List<Path> fileWithName = new ArrayList<Path>();
 		try {
 			// add ".map(Path::getFileName)" to just get filename
-			fileWithName = Files.walk(configFilePath)
+			fileWithName = Files.walk(configFilePath, FileVisitOption.FOLLOW_LINKS)
 			        .filter(s -> s.toString().endsWith(".jpg"))
 			        .sorted()
 			        .collect(Collectors.toList());

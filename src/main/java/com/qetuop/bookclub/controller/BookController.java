@@ -98,7 +98,7 @@ public class BookController {
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
         Book book = bookService.findById(Long.valueOf(id));
         
-        System.out.println("COVER ID:"+book.getSeriesName());
+        //System.out.println("COVER ID:"+book.getSeriesName());
 
         if (book.getImage() != null) {
             byte[] byteArray = new byte[book.getImage().length];
@@ -137,39 +137,40 @@ public class BookController {
     	return IOUtils.toByteArray(file.getInputStream());
 	}
 
-	
-
 	@ExceptionHandler(StorageFileNotFoundException.class)
 	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
 		return ResponseEntity.notFound().build();
 	}
 
-
-
     @PostMapping("/scan")
     public String scan() {
-        System.out.println("HERE:scan/ ");
+        System.out.println("HERE:POST scan/ ");
         Scanner scanner = new Scanner(storageService, bookRepository);
         scanner.scan();
         return "redirect:/";
     }
 
-
     @GetMapping("/scan")
     public String scan2() {
-        System.out.println("HERE:GETscan/ ");
+        System.out.println("HERE:GET scan/ ");
         return "redirect:/";
     }
+
+	@GetMapping("/showBookTable")
+	public String showBookTable(Model model) {
+		List<Book> books = (List<Book>) bookService.findAll();
+//		for (Book book : books) {
+//			System.out.println(book.getTitle() + ":" + book.getSeriesName());
+//		}
+		model.addAttribute("books", books);
+		return "showBookTable";
+	}
+
     @GetMapping("/showBooks")
-    public String findBooks(Model model) {
-
+    public String showBooks(Model model) {
         List<Book> books = (List<Book>) bookService.findAll();
-
         model.addAttribute("books", books);
-
-        //return "showBooks";
         return "showBooks";
-
     }
 
 	@GetMapping("/showSeries")
@@ -197,26 +198,15 @@ public class BookController {
 			} // series book
 		} // for each book
 
-		System.out.println("seriesMap size: " + seriesMap.size());
-
-
 		model.addAttribute("seriesMap", seriesMap);
-
-		//return "showBooks";
 		return "showSeries";
-
 	}
 
+	@GetMapping(path="/book/{id}")
+	public String showBook(@PathVariable String id, Model model) throws IOException {
+		Book book = bookService.findById(Long.valueOf(id));
+		model.addAttribute("book", book);
+		return "showBook";
+	}
 
-
-    /*
-    @GetMapping(path="/books/{bookId}/cover")
-    //https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#core.web for auto resolution of path var to domain Object
-    public @ResponseBody byte[] getPoster(@PathVariable("bookId") Book book, HttpServletResponse response){
-        File file = book.getPosterFile();
-        //stream the bytes of the file
-        // see https://www.baeldung.com/spring-controller-return-image-file
-        // see https://www.baeldung.com/spring-mvc-image-media-data
-    }
-    */
-}
+} // BookController

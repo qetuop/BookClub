@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+    <style>
+
+    </style>
+
+</head>
+
+<body>
+<table id="example" border="1">
+
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Series Name</th>
+        <th>Series Number</th>
+        <th>Cover</th>
+        <th>Path</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.title}"> Book Title </td>
+        <td th:text="${book.author}"> Author </td>
+        <td th:text="${book.seriesName}"> Series Name</td>
+
+        <div th:if="${book.seriesName}">
+            <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
+                <td th:text="${result}"> Series Number </td>
+            </th:block>
+        </div>
+        <div th:unless="${book.seriesName}">
+            <td></td>
+        </div>
+
+        <td th:text="${book.cover}"> Cover </td>
+
+        <td th:text="${book.path}"> Path </td>
+    </tr>
+
+    </tbody>
+
+    <tfoot>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Series Name</th>
+        <th>Series Number</th>
+        <th>Cover</th>
+        <th>Path</th>
+    </tr>
+    </tfoot>
+</table>
+
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
+
+<script>
+$(document).ready(function() {
+
+    $.fn.dataTable.moment( 'M/D/YYYY' );
+
+    $('#example').DataTable( {
+        "iDisplayLength": 100,
+        stateSave: true,
+
+        "columnDefs": [
+            {
+                "targets": [ 1 ],
+                "visible": true,
+                "searchable": false
+            }
+        ]
+    } );
+} );
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#example tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#example').DataTable();
+
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+
+        $( 'input', this.footer() ).on( 'keyup change clear', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+} );
+
+</script>
+
+</body>
+
+</html>
