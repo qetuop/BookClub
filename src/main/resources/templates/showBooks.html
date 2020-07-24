@@ -71,14 +71,20 @@ p {
 
     <div class="column">
         <div class="card">
+
             <img th:src="@{/books/{id}/cover(id=${book.id})}"
                  class="card-img-top" alt=COVER width="100" height="150">
+
             <p class="card-body">
+
                 <a th:href="@{/book/{id}(id=${book.id})}">
             <p class="card-title" th:text="${book.title}">TITLE</p></a>
-            <p class="card-text" th:text="${book.author}">AUTHOR</p>
+
+            <a th:href="@{/showBooks/author/{author}(author=${book.author})}">
+                <p class="card-text" th:text="${book.author}">AUTHOR</p></a>
 
             <div th:if="${book.seriesName}">
+                <a th:href="@{/showBooks/series/{seriesName}(seriesName=${book.seriesName})}">
                 <th:block
                         th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
                     <p class="card-text" th:text="${book.seriesName} + ' ('

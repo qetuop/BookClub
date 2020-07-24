@@ -69,7 +69,7 @@ public class BookController {
 
     @GetMapping("/")
 	public String listUploadedFiles(Model model) throws IOException {
-		System.out.println("HERE:GET/ ");
+		System.out.println("HERE:GET/ listUploadedFiles");
 
 		model.addAttribute("files", storageService.loadAll().map(
 				path -> MvcUriComponentsBuilder.fromMethodName(BookController.class,
@@ -172,6 +172,21 @@ public class BookController {
         model.addAttribute("books", books);
         return "showBooks";
     }
+
+    @GetMapping("/showBooks/author/{author}")
+    public String showBooksByAuthor(@PathVariable String author, Model model) {
+        List<Book> books = (List<Book>) bookService.findByAuthor(author);
+        model.addAttribute("books", books);
+        return "showBooks";
+    }
+
+	@GetMapping("/showBooks/series/{seriesName}")
+	public String showBooksBySeries(@PathVariable String seriesName, Model model) {
+		List<Book> books = (List<Book>) bookService.findBySeriesName(seriesName);
+		books.sort(Comparator.comparing(Book::getSeriesNumber));
+		model.addAttribute("books", books);
+		return "showBooks";
+	}
 
 	@GetMapping("/showSeries")
 	public String showSeries(Model model) {

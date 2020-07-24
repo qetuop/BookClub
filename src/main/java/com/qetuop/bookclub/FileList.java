@@ -33,7 +33,7 @@ public class FileList {
         System.out.println("---Files end-----");
 */
         
-        System.out.println("---JPGs start-----");
+        System.out.println("---Grabbing books-----");
         
 
         List<Path> fileWithName = new ArrayList<Path>();
@@ -51,7 +51,7 @@ public class FileList {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println("---JPGs end-----");
+		System.out.println("---Done-----");
 //.filter(f -> extensions.stream().anyMatch(f::endsWith))
 		
 		return fileWithName;

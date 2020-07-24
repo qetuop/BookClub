@@ -10,5 +10,8 @@ public interface IBookService {
     List<Book> findAll();
     Book findById(long id);
 
+    List<Book> findByAuthor(String author);
+    List<Book> findBySeriesName(String seriesName);
+
     void saveImageFile(long id, MultipartFile file);
 }

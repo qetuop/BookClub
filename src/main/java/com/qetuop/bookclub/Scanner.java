@@ -1,14 +1,15 @@
 package com.qetuop.bookclub;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.io.InputStream;
 
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,39 @@ public class Scanner {
         // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
         String rootDir = "/home/brian/Projects/testdir/audio books/";
         //rootDir = "/media/NAS/audiobooks/";
+
+        //ROOT DIR: /home/brian/Projects/testdir/audio books/
+        //file dir:/home/brian/Projects/testdir/audio books
+/*
+        Configurations configs = new Configurations();
+        InputStream inputStream = null;
+        try
+        {
+            Properties prop = new Properties();
+            inputStream = getClass().getClassLoader().getResourceAsStream("bookclub.properties");
+            prop.load(inputStream);
+
+            //Configuration config = configs.properties(new File("bookclub.properties"));
+            // access configuration properties
+            //rootDir = config.getString("rootDir");
+            rootDir = prop.getProperty("rootDir");
+
+        }catch (FileNotFoundException ex) {
+            System.err.println("Property file '"  + "' not found in the classpath");
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+*/
+        System.out.println("ROOT DIR: " + rootDir);
 
         List<Path> fileWithName = fileList.printFiles(rootDir);
 

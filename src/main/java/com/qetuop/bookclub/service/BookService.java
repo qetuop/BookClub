@@ -23,19 +23,29 @@ public class BookService implements IBookService{
 
     @Override
     public List<Book> findAll() {
-
         List<Book> books = (List<Book>) repository.findAll();
-
         return books;
     } 
 
     @Override
     public Book findById(long id) {
-
         Optional<Book> book = repository.findById(id);
-
         return book.get();
-    } 
+    }
+
+    @Override
+    public List<Book> findByAuthor(String author) {
+        System.out.println("BookService:findByAuthor: " + author);
+        List<Book> books = (List<Book>) repository.findByAuthor(author);
+        return books;
+    }
+
+    @Override
+    public List<Book> findBySeriesName(String seriesName) {
+        System.out.println("BookService:findBySeries: " + seriesName);
+        List<Book> books = (List<Book>) repository.findBySeriesName(seriesName);
+        return books;
+    }
 
     @Override
     @Transactional
@@ -43,11 +53,9 @@ public class BookService implements IBookService{
         System.out.println("HERE:saveImageFile");
         try {
             Book book = repository.findById(id).get();
-    
             Byte[] byteObjects = new Byte[file.getBytes().length];
 
             int i = 0;
-
             for (byte b : file.getBytes()){
                 byteObjects[i++] = b;
             }
