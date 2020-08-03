@@ -70,4 +70,10 @@ public class BookService implements IBookService{
             e.printStackTrace();
         }
     }
+
+    public void setRead(Long id, boolean read) {
+        Book book = repository.findById(id).get();
+        book.setRead(true);
+        repository.save(book);
+    }
 }

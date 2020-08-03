@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #799966;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-gap: 10px;
+}
+
+.container {
+    padding: 00px;
+    /* space around ?column? but not between them */
+    background-color: #999966;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.card-img {
+    width: 100px;
+    height: 150px;
+}
+
+.card-info {
+    margin-top: 0em;
+    margin-bottom: 0em;
+    white-space: nowrap;
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+}
+
+  .image {
+    opacity: 1;
+    width: 100%;
+    height: auto;
+    transition: 0.5s ease;
+  }
+
+  /* how to display the watched icon in non-hover state */
+  .watched {
+    transition: 0.5s ease;
+    opacity: 0.2;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+  }
+
+  .container:hover .image {
+    opacity: 0.3;
+  }
+
+  /* how to display the watched icon in hover state - change only the listed attributes? */
+  .container:hover .watched {
+    opacity: 1;
+  }
+
+
+/* The icon inside the overlay is positioned in the middle vertically and horizontally */
+
+.icon {
+    color: white;
+    font-size: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+
+/* When you move the mouse over the icon, change color */
+
+.fa-user:hover {
+    color: #eee;
+}

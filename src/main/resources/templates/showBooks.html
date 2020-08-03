@@ -1,103 +1,85 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/grid.css}" href="/css/grid.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-* {
-	box-sizing: border-box;
-}
-
-body {
-	font-family: Arial, Helvetica, sans-serif;
-	background: #799966;
-}
-
-/* Float four columns side by side */
-.column {
-	float: left;
-	width: 10%;
-	margin: 5px 2px;
-}
-
-
-
-/* Clear floats after the columns */
-.row:after {
-	content: "";
-	display: table;
-	clear: both;
-}
-
-/* Responsive columns */
-@media screen and (max-width: 100px) {
-	.column {
-		width: 100%;
-		display: block;
-	}
-}
-
-/* Style the counter cards */
-.card {
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-	padding: 0px;
-	text-align: left;
-	background-color: #999966;
-	width: 100px;
-}
-
-p {
-  margin-top: 0em ;
-  margin-bottom: 0em ;
-  white-space: nowrap;
-  width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 10px;
-}
 
     </style>
-
 </head>
 
 <body>
+    <p id="text">
+        CHANGE ME
+    </p>
+    <br>
+    <div class="grid">
+        <tr th:each="book : ${books}">
+            <div class="container">
+                <img class="card-img" th:src="@{/books/{id}/cover(id=${book.id})}" title="MOUSE OVER TxT" alt=COVER>
 
-<tr th:each="book : ${books}">
 
-    <div class="column">
-        <div class="card">
-            
-            <img th:src="@{/books/{id}/cover(id=${book.id})}" title="foo" class="card-img-top" alt=COVER width="100"
-                height="150">
+                <button class="watched" th:onclick="toggleRead([[${book.id}]])">
+                    <svg width="25" height="25">
+                        <circle id="circ" cx="12" cy="12" r="10" stroke="green" stroke-width="4" />
+                    </svg>
+                </button>
 
-            <p class="card-body">
+
+                <!--                <form method="POST" th:action="@{/toggleRead}" th:object="${book.id}">
+                    <button type="submit" name="submit" value="value" class="link-button">
+                        <svg width="25" height="25">
+                            <circle id="circ" cx="12" cy="12" r="10" stroke="green" stroke-width="4" />
+                        </svg>
+                    </button>
+                </form>-->
 
                 <a th:href="@{/book/{id}(id=${book.id})}">
-                    <p class="card-title" th:text="${book.title}">TITLE</p>
+                    <p class="card-info" th:text="${book.title}">TITLE</p>
                 </a>
 
                 <a th:href="@{/showBooks/author/{author}(author=${book.author})}">
-                    <p class="card-text" th:text="${book.author}">AUTHOR</p>
+                    <p class="card-info" th:text="${book.author}">AUTHOR</p>
                 </a>
 
-            <div th:if="${book.seriesName}">
-                <a th:href="@{/showBooks/series/{seriesName}(seriesName=${book.seriesName})}">
-                    <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
-                    <p class="card-text" th:text="${book.seriesName} + ' ('
-                        + ${result}
-                        + ')'">SERIES</p>
-                </th:block>
+                <div th:if="${book.seriesName}">
+                    <a th:href="@{/showBooks/series/{seriesName}(seriesName=${book.seriesName})}">
+                        <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
+                            <p class="card-info" th:text="${book.seriesName} + ' ('
+                            + ${result}
+                            + ')'">SERIES</p>
+                        </th:block>
+                    </a>
+                </div>
+
             </div>
-
-
-        </div>
+        </tr>
     </div>
-    </div>
-
-</tr>
-
 </body>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+<script>
+    function toggleRead(id) {
+        console.log(id);
+        //document.getElementById("text").innerHTML = "Hello World";
+        //$.post("/toggleRead/", {firstname: "John"});
+
+
+        $.ajax({
+            type: 'POST',
+            url: "toggleRead/" + id,
+            success: function(html) {
+                console.log('success');
+            },
+            error: function(exception) {
+                alert('Exeption:' + exception);
+            }
+        });
+        //e.preventDefault();
+    }
+</script>
 
 </html>

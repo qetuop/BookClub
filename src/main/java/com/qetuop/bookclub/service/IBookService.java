@@ -14,4 +14,5 @@ public interface IBookService {
     List<Book> findBySeriesName(String seriesName);
 
     void saveImageFile(long id, MultipartFile file);
+    void setRead(Long id, boolean read);
 }

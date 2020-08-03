@@ -202,7 +202,7 @@ public class Scanner {
                     }
                 } else {
                     // Book(String title, String author, String path, String cover, Byte[] image, String seriesName, int seriesNumber)
-                    book = new Book(title, author, path, cover, image, seriesName, seriesNumber);
+                    book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
                 }
 
                 book = bookRepository.save(book);
