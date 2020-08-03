@@ -18,11 +18,12 @@ body {
     max-width: 400px;
 }
 
+/*
 .card-img {
     width: 100px;
     height: 150px;
 }
-
+*/
 .card-info {
     margin-top: 0em;
     margin-bottom: 0em;
@@ -33,7 +34,8 @@ body {
     font-size: 10px;
 }
 
-  .image {
+/* how to display the cover image in non-hover state */
+  .card-img  {
     opacity: 1;
     width: 100%;
     height: auto;
@@ -47,9 +49,13 @@ body {
     position: absolute;
     top: 0%;
     left: 0%;
+    background-color: rgba(0,0,0,.45);
+    border-width: 0px;
+    padding: 0px;
   }
 
-  .container:hover .image {
+   /* gray out the cover image slightly when moused over */
+  .container:hover .card-img {
     opacity: 0.3;
   }
 
@@ -58,23 +64,6 @@ body {
     opacity: 1;
   }
 
-
-/* The icon inside the overlay is positioned in the middle vertically and horizontally */
-
-.icon {
-    color: white;
-    font-size: 100px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    text-align: center;
-}
-
-
-/* When you move the mouse over the icon, change color */
-
-.fa-user:hover {
-    color: #eee;
-}
+/* keep links same color after visiting */
+a { text-decoration: none; color:blue; }
+a:visited { text-decoration: none; }
