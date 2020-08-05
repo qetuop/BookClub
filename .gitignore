@@ -47,6 +47,9 @@ bin/*
 ### IntelliJ IDEA
 .idea/
 
+### Project stuff
+book_club_backup.csv
+
 ### my stuff ###
 *.bak*
 bak/

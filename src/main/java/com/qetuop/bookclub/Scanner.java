@@ -153,12 +153,22 @@ public class Scanner {
 
                     //System.out.println("\t\t" + StringUtils.join(splitTitle, "|"));
                     title = splitTitle[0].strip();
-                    seriesNumber = Float.parseFloat(splitTitle[1].strip());
+
+                    try {
+                        seriesNumber = Float.parseFloat(splitTitle[1].strip());
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+
 
                 } else if (titleFull.matches(".*\\d.*")) {
                     String[] splitTitle = titleFull.split(" ");
                     String seriesNumberStr = splitTitle[splitTitle.length - 1];
-                    seriesNumber = Float.parseFloat(seriesNumberStr);
+                    try {
+                        seriesNumber = Float.parseFloat(seriesNumberStr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                     //System.out.println("SERIES NUM: " + seriesNumber);
                     title = titleFull.substring(0, titleFull.indexOf(seriesNumberStr) - 1);
                 }

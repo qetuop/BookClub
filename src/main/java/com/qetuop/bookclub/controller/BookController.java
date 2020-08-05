@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Comparator;
 
+import com.qetuop.bookclub.BackRestore;
 import com.qetuop.bookclub.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,11 @@ public class BookController {
     
     private final StorageService storageService;
     private final BookService bookService;
+
+    // TODO: don't access repository directly but use service?
     private final BookRepository bookRepository;
+
+    private BackRestore backRestore;
     
     @Autowired
 	public BookController(StorageService storageService, BookService bookService, BookRepository bookRepository) {
@@ -144,6 +149,22 @@ public class BookController {
         scanner.scan();
         return "redirect:/";
     }
+
+	@PostMapping("/backup")
+	public String backup() {
+		System.out.println("HERE:POST backup/ ");
+		BackRestore backRestore = new BackRestore(bookService);
+		backRestore.backup();
+		return "redirect:/";
+	}
+
+	@PostMapping("/restore")
+	public String restore() {
+		System.out.println("HERE:POST restore/ ");
+		BackRestore backRestore = new BackRestore(bookService);
+		backRestore.restore();
+		return "redirect:/";
+	}
 
 	@GetMapping("/showBookTable")
 	public String showBookTable(Model model) {
