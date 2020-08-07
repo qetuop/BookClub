@@ -9,11 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;  //add @Data before class to get auto generated getter, setters, etc https://projectlombok.org/features/Data
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
+@EqualsAndHashCode(exclude = "tags")
+
 @Entity // This tells Hibernate to make a table out of this class, use @Table(name = "books") to specify the table name
-@Table(name = "books")
+//@Table(name = "books")
 public class Book {
 
     @Id
@@ -30,6 +36,15 @@ public class Book {
 
     @Lob
     private Byte[] image;
+
+
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "Book_Tag",
+            joinColumns = { @JoinColumn(name = "book_id") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_id") }
+    )
+    Set<Tag> tags = new HashSet<>();
 
     // needed for JPA, NoArgsConstructor created by lombok
     protected Book() {}

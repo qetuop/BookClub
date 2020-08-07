@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.io.InputStream;
 
+import com.qetuop.bookclub.model.Tag;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -39,7 +40,7 @@ public class Scanner {
 
     @Autowired
     public StorageService storageService;
-    public BookRepository bookRepository;
+    public BookRepository bookRepository;  // TODO: replace with BookService?
 
     public FileList fileList = new FileList();
 
@@ -232,5 +233,11 @@ public class Scanner {
             //System.out.println("\t"+simpleFileName);
 
         } // for each path
+
+
+        // TAG TEST
+        Set<Tag> tags = new HashSet<>();
+
+
     } // scan
 } // class Scanner
