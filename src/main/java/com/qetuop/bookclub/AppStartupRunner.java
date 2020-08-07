@@ -2,6 +2,7 @@ package com.qetuop.bookclub;
 
 import java.lang.invoke.MethodHandles;
 
+import com.qetuop.bookclub.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qetuop.bookclub.service.IStorageService;
-import com.qetuop.bookclub.repository.BookRepository;
+import com.qetuop.bookclub.service.BookService;
 
 @Component
 public class AppStartupRunner implements ApplicationRunner {
@@ -21,20 +22,20 @@ public class AppStartupRunner implements ApplicationRunner {
 
 	@Autowired
 	public IStorageService storageService;
-	public BookRepository bookRepository;
+	public BookService bookService;
 
 	public FileList fileList = new FileList();
 
-	public AppStartupRunner(IStorageService storageService, BookRepository bookRepository) {
+	public AppStartupRunner(IStorageService storageService, BookService bookService) {
 		this.storageService = storageService;
-		this.bookRepository = bookRepository;
+		this.bookService = bookService;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		LOG.info("AppStartupRunner::run");
 
-		Scanner scanner = new Scanner(storageService, bookRepository);
+		Scanner scanner = new Scanner(storageService, bookService);
 		scanner.scan();
 /*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent

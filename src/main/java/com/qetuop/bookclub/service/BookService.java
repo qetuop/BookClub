@@ -22,6 +22,11 @@ public class BookService implements IBookService{
     private BookRepository repository;
 
     @Override
+    public Book save(Book book) {
+        return repository.save(book);
+    }
+
+    @Override
     public List<Book> findAll() {
         List<Book> books = (List<Book>) repository.findAll();
         return books;

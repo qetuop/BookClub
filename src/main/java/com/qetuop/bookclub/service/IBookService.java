@@ -7,6 +7,8 @@ import com.qetuop.bookclub.model.Book;
 
 public interface IBookService {
 
+    public Book save(Book book);
+
     List<Book> findAll();
     Book findById(long id);
 

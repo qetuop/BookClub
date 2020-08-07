@@ -137,7 +137,7 @@ public class BookController {
     @PostMapping("/scan")
     public String scan() {
         System.out.println("HERE:POST scan/ ");
-        Scanner scanner = new Scanner(storageService, bookRepository);
+        Scanner scanner = new Scanner(storageService, bookService);
         scanner.scan();
         return "redirect:/";
     }

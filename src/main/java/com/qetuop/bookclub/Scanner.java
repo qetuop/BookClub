@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import com.qetuop.bookclub.model.Tag;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,21 +23,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.qetuop.bookclub.service.IStorageService;
-import com.qetuop.bookclub.repository.BookRepository;
+import com.qetuop.bookclub.service.BookService;
 import com.qetuop.bookclub.model.Book;
 
 public class Scanner {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    public IStorageService storageService;
-    public BookRepository bookRepository;  // TODO: replace with BookService?
+    public IStorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
+    public BookService bookService;  // TODO: replace with BookService?
 
     public FileList fileList = new FileList();
 
-    public Scanner(IStorageService storageService, BookRepository bookRepository) {
+    public Scanner(IStorageService storageService, BookService bookService) {
         this.storageService = storageService;
-        this.bookRepository = bookRepository;
+        this.bookService = bookService;
     }
 
     public void scan() {
@@ -192,10 +193,10 @@ public class Scanner {
                 // set the cover to the largest image found in the dir.  TODO: is this the best thing to do?
                 if (bookMap.containsKey(hashCode)) {
 
-                    Optional<Book> found = bookRepository.findById(bookMap.get(hashCode));
+                    book = bookService.findById(bookMap.get(hashCode));
 
-                    if (found.isPresent()) {
-                        book = found.get();
+                    if (book != null) {
+
 
                         if (book.getImage().length < image.length) {
                             book.setImage(image);
@@ -206,7 +207,7 @@ public class Scanner {
                     book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
                 }
 
-                book = bookRepository.save(book);
+                book = bookService.save(book);
                 bookMap.put(hashCode, book.getId());
 
 
