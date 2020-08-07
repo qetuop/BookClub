@@ -1,35 +1,15 @@
 package com.qetuop.bookclub;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
-import java.net.URLDecoder;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.qetuop.bookclub.storage.StorageProperties;
-import com.qetuop.bookclub.storage.StorageService;
-import com.qetuop.bookclub.repository.BookRepository;
-import com.qetuop.bookclub.model.Book;
+import com.qetuop.bookclub.service.StorageProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)

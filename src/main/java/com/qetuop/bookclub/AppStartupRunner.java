@@ -1,28 +1,6 @@
 package com.qetuop.bookclub;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +11,8 @@ import org.springframework.stereotype.Component;
 //import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qetuop.bookclub.storage.StorageService;
+import com.qetuop.bookclub.service.IStorageService;
 import com.qetuop.bookclub.repository.BookRepository;
-import com.qetuop.bookclub.model.Book;
 
 @Component
 public class AppStartupRunner implements ApplicationRunner {
@@ -43,12 +20,12 @@ public class AppStartupRunner implements ApplicationRunner {
 	public static int counter;
 
 	@Autowired
-	public StorageService storageService;
+	public IStorageService storageService;
 	public BookRepository bookRepository;
 
 	public FileList fileList = new FileList();
 
-	public AppStartupRunner(StorageService storageService, BookRepository bookRepository) {
+	public AppStartupRunner(IStorageService storageService, BookRepository bookRepository) {
 		this.storageService = storageService;
 		this.bookRepository = bookRepository;
 	}

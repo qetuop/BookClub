@@ -7,9 +7,7 @@ import java.io.FileWriter;
 import java.util.Scanner;
 
 import com.qetuop.bookclub.model.Book;
-import com.qetuop.bookclub.repository.BookRepository;
 import com.qetuop.bookclub.service.BookService;
-import com.qetuop.bookclub.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.qetuop.bookclub.storage;
+package com.qetuop.bookclub.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +18,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class FileSystemStorageService implements StorageService {
+public class StorageService implements IStorageService {
 
 	private final Path rootLocation;
 
 	@Autowired
-	public FileSystemStorageService(StorageProperties properties) {
+	public StorageService(StorageProperties properties) {
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 

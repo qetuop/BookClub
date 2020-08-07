@@ -1,4 +1,4 @@
-package com.qetuop.bookclub.storage;
+package com.qetuop.bookclub.service;
 
 public class StorageFileNotFoundException extends StorageException {
 
