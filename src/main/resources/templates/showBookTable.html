@@ -12,106 +12,115 @@
 </head>
 
 <body>
-<table id="example" border="1">
+    <table id="example" border="1">
 
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Series Name</th>
-        <th>Series Number</th>
-        <th>Cover</th>
-        <th>Path</th>
-    </tr>
-    </thead>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Series Name</th>
+                <th>Series Number</th>
+                <th>Tags</th>
+                <th>Cover</th>
+                <th>Path</th>
 
-    <tbody>
-    <tr th:each="book : ${books}">
-        <td th:text="${book.title}"> Book Title </td>
-        <td th:text="${book.author}"> Author </td>
-        <td th:text="${book.seriesName}"> Series Name</td>
+            </tr>
+        </thead>
 
-        <div th:if="${book.seriesName}">
-            <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
-                <td th:text="${result}"> Series Number </td>
-            </th:block>
-        </div>
-        <div th:unless="${book.seriesName}">
-            <td></td>
-        </div>
+        <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.title}"> Book Title </td>
+                <td th:text="${book.author}"> Author </td>
+                <td th:text="${book.seriesName}"> Series Name</td>
 
-        <td th:text="${book.cover}"> Cover </td>
+                <div th:if="${book.seriesName}">
+                    <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
+                        <td th:text="${result}"> Series Number </td>
+                    </th:block>
+                </div>
+                <div th:unless="${book.seriesName}">
+                    <td></td>
+                </div>
 
-        <td th:text="${book.path}"> Path </td>
-    </tr>
+                <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
 
-    </tbody>
+               <!-- <td th:text="${#strings.setJoin(book.getTags(),',')}"> Tags </td>-->
 
-    <tfoot>
-    <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Series Name</th>
-        <th>Series Number</th>
-        <th>Cover</th>
-        <th>Path</th>
-    </tr>
-    </tfoot>
-</table>
+                <!-- <th:block th:each="tag : ${book.getTags()}">
+                    <td th:text="${tag.value}"></td>
+                </th:block> -->
 
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
+                <td th:text="${book.cover}"> Cover </td>
 
-<script>
-$(document).ready(function() {
+                <td th:text="${book.path}"> Path </td>
 
-    $.fn.dataTable.moment( 'M/D/YYYY' );
 
-    $('#example').DataTable( {
-        "iDisplayLength": 100,
-        stateSave: true,
 
-        "columnDefs": [
-            {
-                "targets": [ 1 ],
-                "visible": true,
-                "searchable": false
-            }
-        ]
-    } );
-} );
+            </tr>
 
-$(document).ready(function() {
-    // Setup - add a text input to each footer cell
-    $('#example tfoot th').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-    } );
+        </tbody>
 
-    // DataTable
-    var table = $('#example').DataTable();
+        <tfoot>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Series Name</th>
+                <th>Series Number</th>
+                <th>Tags</th>
+                <th>Cover</th>
+                <th>Path</th>
 
-    // Apply the search
-    table.columns().every( function () {
-        var that = this;
+            </tr>
+        </tfoot>
+    </table>
 
-        $( 'input', this.footer() ).on( 'keyup change clear', function () {
-            if ( that.search() !== this.value ) {
-                that
-                    .search( this.value )
-                    .draw();
-            }
-        } );
-    } );
-} );
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
 
-</script>
+    <script>
+        $(document).ready(function() {
+
+            $.fn.dataTable.moment('M/D/YYYY');
+
+            $('#example').DataTable({
+                "iDisplayLength": 100,
+                stateSave: true,
+
+                "columnDefs": [{
+                    "targets": [1],
+                    "visible": true,
+                    "searchable": false
+                }]
+            });
+        });
+
+        $(document).ready(function() {
+            // Setup - add a text input to each footer cell
+            $('#example tfoot th').each(function() {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable();
+
+            // Apply the search
+            table.columns().every(function() {
+                var that = this;
+
+                $('input', this.footer()).on('keyup change clear', function() {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 
