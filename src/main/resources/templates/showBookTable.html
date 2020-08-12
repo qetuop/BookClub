@@ -20,9 +20,10 @@
                 <th>Author</th>
                 <th>Series Name</th>
                 <th>Series Number</th>
+                <th>Read</th>
                 <th>Tags</th>
-                <th>Cover</th>
-                <th>Path</th>
+                <!--<th>Cover</th>
+                <th>Path</th>-->
 
             </tr>
         </thead>
@@ -42,17 +43,16 @@
                     <td></td>
                 </div>
 
+                <td>  <input type="checkbox" name="read" th:checked="${book.read}"/> </td>
+
+                   <!-- <input type="checkbox" name="cers" th:value="${certificate.id}"/>
+-->
                 <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
 
-               <!-- <td th:text="${#strings.setJoin(book.getTags(),',')}"> Tags </td>-->
 
-                <!-- <th:block th:each="tag : ${book.getTags()}">
-                    <td th:text="${tag.value}"></td>
-                </th:block> -->
+               <!-- <td th:text="${book.cover}"> Cover </td>
 
-                <td th:text="${book.cover}"> Cover </td>
-
-                <td th:text="${book.path}"> Path </td>
+                <td th:text="${book.path}"> Path </td>-->
 
 
 
@@ -66,9 +66,10 @@
                 <th>Author</th>
                 <th>Series Name</th>
                 <th>Series Number</th>
+                <th>Read</th>
                 <th>Tags</th>
-                <th>Cover</th>
-                <th>Path</th>
+               <!-- <th>Cover</th>
+                <th>Path</th>-->
 
             </tr>
         </tfoot>
