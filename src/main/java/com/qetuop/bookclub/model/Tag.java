@@ -8,14 +8,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;  //add @Data before class to get auto generated getter, setters, etc https://projectlombok.org/features/Data
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @Entity
+//@Table(uniqueConstraints={@UniqueConstraint(columnNames = "value")})
 public class Tag {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -23,6 +28,8 @@ public class Tag {
     private String value;
 
     @ManyToMany(mappedBy = "tags")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Book> books = new HashSet<>();
 
     // needed for JPA, NoArgsConstructor created by lombok

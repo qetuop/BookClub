@@ -19,7 +19,7 @@ import com.qetuop.bookclub.repository.BookRepository;
 public class BookService implements IBookService{
 
     @Autowired
-    private BookRepository repository;
+    public BookRepository repository;
 
     @Override
     public Book save(Book book) {
@@ -51,6 +51,31 @@ public class BookService implements IBookService{
         List<Book> books = (List<Book>) repository.findBySeriesName(seriesName);
         return books;
     }
+
+    @Override
+    public List<Book> retrieveByTag(String tag) {
+        System.out.println("retrieveByTag: " + tag);
+        List<Book> books = (List<Book>) repository.retrieveByTag(tag);
+        System.out.println("retrieveByTag FOUND: " + books.size());
+        return books;
+    }
+
+    public List<Book> findByNameEndsWith(String chars) {
+        System.out.println("findByNameEndsWith: " + chars);
+        List<Book> books = (List<Book>) repository.findByNameEndsWith(chars);
+        System.out.println("findByNameEndsWith FOUND: " + books.size());
+        return books;
+    }
+
+    /*
+    @Override
+    public List<Book> test() {
+        System.out.println("test: ");
+        List<Book> books = (List<Book>) repository.test();
+        System.out.println("test FOUND: " + books.size());
+        return books;
+    }
+*/
 
     @Override
     @Transactional

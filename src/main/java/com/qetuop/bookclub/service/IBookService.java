@@ -1,6 +1,9 @@
 package com.qetuop.bookclub.service;
 
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.qetuop.bookclub.model.Book;
@@ -14,6 +17,10 @@ public interface IBookService {
 
     List<Book> findByAuthor(String author);
     List<Book> findBySeriesName(String seriesName);
+
+    List<Book> retrieveByTag(String tag);
+    List<Book> findByNameEndsWith(String chars);
+    //List<Book> test();
 
     void saveImageFile(long id, MultipartFile file);
     void setRead(Long id, boolean read);

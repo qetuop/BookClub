@@ -11,15 +11,15 @@ import javax.persistence.Table;
 import lombok.Data;  //add @Data before class to get auto generated getter, setters, etc https://projectlombok.org/features/Data
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 @Data
-@EqualsAndHashCode(exclude = "tags")
-
-@Entity // This tells Hibernate to make a table out of this class, use @Table(name = "books") to specify the table name
-//@Table(name = "books")
+@Entity // This tells Hibernate to make a table out of this class, use @Table(name = "book") to specify the table name
+//@Table(name = "book")
 public class Book {
 
     @Id
@@ -38,12 +38,20 @@ public class Book {
     private Byte[] image;
 
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    // TODO: I'm not sure if using the EAGER fetch is right, default is lazy, it fixes the error
+    // org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.qetuop.bookclub.model.Book.tags, could not initialize proxy - no Session
+    // i think related to the addTag/removeTag's use of the tag object?
+    // Add the two Excludes else you'll get a circular reference/stack overflow...i think
+    // I think the @joinTable is only needed if you want to change the default behavoir, in this case the below should
+    // be auto create by just using the ManyToMany....i think
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
     @JoinTable(
             name = "Book_Tag",
             joinColumns = { @JoinColumn(name = "book_id") },
             inverseJoinColumns = { @JoinColumn(name = "tag_id") }
     )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     Set<Tag> tags = new HashSet<>();
 
     // needed for JPA, NoArgsConstructor created by lombok
@@ -58,6 +66,16 @@ public class Book {
         this.seriesName = seriesName;
         this.seriesNumber = seriesNumber;
         this.read = read;
+    }
+
+    public void addTag(Tag tag) {
+        this.getTags().add(tag);
+        tag.getBooks().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        this.getTags().remove(tag);
+        tag.getBooks().remove(this);
     }
 
     // getters/setters/hash/toString created by lombok

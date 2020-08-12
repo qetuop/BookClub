@@ -26,6 +26,9 @@ import com.qetuop.bookclub.service.IStorageService;
 import com.qetuop.bookclub.service.BookService;
 import com.qetuop.bookclub.model.Book;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 public class Scanner {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -228,6 +231,62 @@ public class Scanner {
 
         // TAG TEST
         Set<Tag> tags = new HashSet<>();
+
+        Book book = null;
+
+        book = bookService.findById(1);
+        //tags = new HashSet<>();
+        book.addTag(new Tag("SciFi"));
+        System.out.println("BOOK CHECK1: " + book.getTags());
+        //book.setTags(tags);
+        book = bookService.save(book);
+        System.out.println("BOOK CHECK2: " + book.getTags());
+
+        book = bookService.findById(2);
+        //tags = new HashSet<>();
+        book.addTag(new Tag("Fantasy"));
+        //book.setTags(tags);
+        book = bookService.save(book);
+
+        book = bookService.findById(3);
+        //tags = new HashSet<>();
+        book.addTag(new Tag("SciFi"));
+        book.addTag(new Tag("Fantasy"));
+        //book.setTags(tags);
+        book = bookService.save(book);
+
+        System.out.println("\n\n--------------------------------------\n\n");
+
+        System.out.println("TEST tags");
+        book = bookService.findById(1);
+
+        tags = book.getTags();
+        System.out.println("Result len: "+tags.size());
+
+        for (Tag tag : tags ) {
+            System.out.println("TAG: " + tag.getId() + ":" + tag.getValue());
+        }
+
+
+        System.out.println("\n\n--------------------------------------\n\n");
+
+        System.out.println("TYRING TO FIND TAG");
+        List<Book> books = bookService.retrieveByTag("Fantasy");
+        //List<Book> books = bookService.retrieveByTag("Dune");
+        //List<Book> books = bookService.test();
+        System.out.println("Result len: "+books.size());
+        for (Book book1 : books) {
+            System.out.println("book1: " + book1.getTitle());
+        }
+/*
+        List<Book> books = bookService.findByNameEndsWith("ne");
+        System.out.println("Result len: "+books.size());
+        for (Book book1 : books) {
+            System.out.println("book1: " + book1.getTitle());
+        }
+*/
+        //EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.baeldung.movie_catalog");
+
 
 
     } // scan
