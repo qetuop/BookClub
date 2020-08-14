@@ -2,9 +2,9 @@
 <html xmlns:th="https://www.thymeleaf.org">
 
 <head>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
     <style>
 
     </style>
@@ -44,7 +44,7 @@
                     <td></td>
                 </div>
 
-                <td>  <input type="checkbox" name="read" th:checked="${book.read}"/> </td>
+                <td> <input type="checkbox" name="read" th:checked="${book.read}" /> </td>
 
                 <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
 
@@ -52,7 +52,7 @@
                 <td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}"></td>
 
 
-               <!-- <td th:text="${book.cover}"> Cover </td>
+                <!-- <td th:text="${book.cover}"> Cover </td>
                 <td th:text="${book.path}"> Path </td>-->
             </tr>
         </tbody>
@@ -66,16 +66,17 @@
                 <th>Read</th>
                 <th>Tags</th>
                 <th>Updated</th>
-               <!-- <th>Cover</th>
+                <!-- <th>Cover</th>
                 <th>Path</th>-->
 
             </tr>
         </tfoot>
     </table>
 
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
 
@@ -84,14 +85,29 @@
 
             $.fn.dataTable.moment('M/D/YYYY');
 
-            $('#example').DataTable({
-                "iDisplayLength": 100,
-                stateSave: true,
+            var table = $('#example').DataTable({
 
-                "columnDefs": [{
-                    "targets": [1],
-                    "visible": true,
-                    "searchable": false
+                iDisplayLength: 10,
+
+                select: true,
+                stateSave: true,
+                dom: 'Bfrtip',
+                buttons: ['pageLength', {
+                    text: 'Select all',
+                    action: function() {
+                        table.rows( { page: 'current' }).select();
+                    }
+                }, {
+                    text: 'Select none',
+                    action: function() {
+                        table.rows().deselect();
+                    }
+                }],
+
+                columnDefs: [{
+                    targets: [1],
+                    visible: true,
+                    searchable: false
                 }]
             });
         });
