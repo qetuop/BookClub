@@ -1,5 +1,6 @@
 package com.qetuop.bookclub.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 
 import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.repository.BookRepository;
@@ -23,6 +25,7 @@ public class BookService implements IBookService{
 
     @Override
     public Book save(Book book) {
+        book.setUpdated(LocalDateTime.now());
         return repository.save(book);
     }
 

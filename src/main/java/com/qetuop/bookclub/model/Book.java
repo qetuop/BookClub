@@ -13,6 +13,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
@@ -33,6 +35,7 @@ public class Book {
     private String seriesName;
     private Float seriesNumber;
     private Boolean read;
+    private LocalDateTime updated;  // time this book, TODO: split into creationTime and modificationTime?  use ZonedDateTime?
 
     @Lob
     private Byte[] image;

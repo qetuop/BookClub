@@ -22,6 +22,7 @@
                 <th>Series Number</th>
                 <th>Read</th>
                 <th>Tags</th>
+                <th>Updated</th>
                 <!--<th>Cover</th>
                 <th>Path</th>-->
 
@@ -45,19 +46,15 @@
 
                 <td>  <input type="checkbox" name="read" th:checked="${book.read}"/> </td>
 
-                   <!-- <input type="checkbox" name="cers" th:value="${certificate.id}"/>
--->
                 <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
+
+                <!--<td th:text="${#dates.format(book.updated, 'dd-MMM-yyyy')}"></td>-->
+                <td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}"></td>
 
 
                <!-- <td th:text="${book.cover}"> Cover </td>
-
                 <td th:text="${book.path}"> Path </td>-->
-
-
-
             </tr>
-
         </tbody>
 
         <tfoot>
@@ -68,6 +65,7 @@
                 <th>Series Number</th>
                 <th>Read</th>
                 <th>Tags</th>
+                <th>Updated</th>
                <!-- <th>Cover</th>
                 <th>Path</th>-->
 
