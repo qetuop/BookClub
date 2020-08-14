@@ -70,5 +70,7 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     // org.springframework.orm.jpa.JpaSystemException: Unable to access lob stream
     // when calling findByAuthor.  why?!?
 
+    @Query("SELECT b FROM Book b WHERE b.author = :author AND b.title = :title")
+    Book findByAuthorAndTitle(@Param("author") String author, @Param("title") String title );
 
 }

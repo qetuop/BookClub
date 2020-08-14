@@ -56,6 +56,13 @@ public class BookService implements IBookService{
     }
 
     @Override
+    public Book findByAuthorAndTitle(String author, String title) {
+        System.out.println("BookService:findByAuthorAndTitle: " + author +":"+ title);
+        Book book = repository.findByAuthorAndTitle(author,title);
+        return book;
+    }
+
+    @Override
     public List<Book> retrieveByTag(String tag) {
         System.out.println("retrieveByTag: " + tag);
         List<Book> books = (List<Book>) repository.retrieveByTag(tag);

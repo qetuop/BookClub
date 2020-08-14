@@ -18,6 +18,8 @@ public interface IBookService {
     List<Book> findByAuthor(String author);
     List<Book> findBySeriesName(String seriesName);
 
+    Book findByAuthorAndTitle(String author, String title);
+
     List<Book> retrieveByTag(String tag);
     List<Book> findByNameEndsWith(String chars);
     //List<Book> test();

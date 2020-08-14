@@ -1,10 +1,10 @@
 package com.qetuop.bookclub;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.util.Comparator;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
+
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+
 
 public class BackRestore {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -41,7 +44,7 @@ public class BackRestore {
 
             FileWriter myWriter = new FileWriter(filename);
 
-            final String bookString = "\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"\n";
+            final String bookString = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n";
 
             myWriter.write(String.format(bookString,
                     "author",
@@ -82,7 +85,7 @@ public class BackRestore {
 
         // search for existing book based on....title/author
 
-        // update *only* the....read flag (add more later)
+       /* // update *only* the....read flag (add more later)
         try {
             File myObj = new File(filename);
             Scanner myReader = new Scanner(myObj);
@@ -94,6 +97,53 @@ public class BackRestore {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        }*/
+
+        try {
+            //Reader reader = Files.newBufferedReader(Paths.get(ClassLoader.getSystemResource(filename).toURI()));
+            Reader reader = Files.newBufferedReader(Paths.get(filename));
+
+            List<String[]> list = new ArrayList<>();
+            CSVReader csvReader = new CSVReader(reader);
+            String[] line;
+
+            // skip column headers
+            csvReader.readNext();
+
+            while ((line = csvReader.readNext()) != null) {
+                //list.add(line);
+                System.out.println(line);
+                for (String token : line ) {
+                    System.out.println(token);
+                }
+                String author = line[0];
+                String title  = line[1];
+                Boolean read  = Boolean.valueOf(line[4]);
+                //String[] tagArr = line[5].split(",");
+                ArrayList<String> tagList = new ArrayList<String>(Arrays.asList(line[5].split(",")));
+
+                Book book = bookService.findByAuthorAndTitle(author,title);
+                if ( book != null ) {
+                    System.out.println("FOUND BOOK: " + book.getAuthor());
+                    book.setRead(read);
+                    if ( !tagList.isEmpty() ) {
+                        for (String tag : tagList) {
+                            book.addTag(new Tag(tag));
+                        }
+                    }
+
+                }
+
+            }
+            reader.close();
+            csvReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        /*} catch (URISyntaxException e) {
+            e.printStackTrace();*/
+        } catch (CsvValidationException e) {
+            e.printStackTrace();
         }
+
     }
 }
