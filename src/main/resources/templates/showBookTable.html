@@ -16,8 +16,8 @@
 
         <thead>
             <tr>
-                <th>Title</th>
                 <th>Author</th>
+                <th>Title</th>
                 <th>Series Name</th>
                 <th>Series Number</th>
                 <th>Read</th>
@@ -32,8 +32,8 @@
 
         <tbody>
             <tr th:each="book : ${books}">
-                <td th:text="${book.title}"> Book Title </td>
                 <td th:text="${book.author}"> Author </td>
+                <td th:text="${book.title}"> Book Title </td>
                 <td th:text="${book.seriesName}"> Series Name</td>
 
                 <div th:if="${book.seriesName}">
@@ -62,8 +62,8 @@
 
         <tfoot>
             <tr>
-                <th>Title</th>
                 <th>Author</th>
+                <th>Title</th>
                 <th>Series Name</th>
                 <th>Series Number</th>
                 <th>Read</th>

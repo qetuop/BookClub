@@ -164,6 +164,12 @@ public class BookController {
 //		for (Book book : books) {
 //			System.out.println(book.getTitle() + ":" + book.getSeriesName());
 //		}
+		//books.sort(Comparator.comparing(Book::getTitle));
+		books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
+
+
+
+
 		model.addAttribute("books", books);
 		return "showBookTable";
 	}

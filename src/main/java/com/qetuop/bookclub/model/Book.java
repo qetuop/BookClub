@@ -76,6 +76,11 @@ public class Book {
         this.seriesName = seriesName;
         this.seriesNumber = seriesNumber;
         this.read = read;
+
+        // TODO: HACK
+        if ( this.title == null ) this.title = "";
+        if ( this.seriesName == null ) this.seriesName = "";
+        if ( this.seriesNumber == null ) this.seriesNumber = 0f;
     }
 
     public void addTag(Tag tag) {
