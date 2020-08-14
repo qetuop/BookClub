@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileWriter;
+import java.util.Comparator;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import com.qetuop.bookclub.model.Book;
+import com.qetuop.bookclub.model.Tag;
 import com.qetuop.bookclub.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +35,25 @@ public class BackRestore {
         System.out.println("BackRestore::backup");
 
         List<Book> books = (List<Book>) bookService.findAll();
+        books.sort(Comparator.comparing(Book::getAuthor));
 
         try {
 
             FileWriter myWriter = new FileWriter(filename);
 
-            final String bookString = "\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"\n";
+            final String bookString = "\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"\n";
 
             myWriter.write(String.format(bookString,
                     "author",
                     "title",
                     "series_name",
                     "series_number",
-                    "read" ));
+                    "read",
+                    "tags",
+                    "updated"));
+//.map{ Bike b -> b.bikeModel }.toCollection(arrayListOf())
+//            book.getTags().stream().map(Book::getValue).collect(Collectors.toList());
+//            entities.stream().map(urEntity -> urEntity.getField1()).collect(Collectors.toList());
 
             for (Book book : books ) {
                 // TODO: format the series num correctly  5.0 -> 5
@@ -52,9 +61,12 @@ public class BackRestore {
                 myWriter.write(String.format(bookString,
                         book.getAuthor(),
                         book.getTitle(),
-                        book.getSeriesName(),
-                        book.getSeriesNumber(),
-                        book.getRead() ));
+                        book.getSeriesName() == null ? "" : book.getSeriesName(),
+                        book.getSeriesNumber() == 0 ? "" : book.getSeriesNumber(),
+                        book.getRead(),
+                        book.getTags() == null ? "" : book.getTags().stream().map(Tag::getValue).collect(Collectors.joining(",")),
+                        book.getUpdated()
+                ));
             }
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
