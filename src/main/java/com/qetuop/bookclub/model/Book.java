@@ -24,6 +24,12 @@ import java.util.List;
 //@Table(name = "book")
 public class Book {
 
+    public enum Type {
+        audio,
+        ebook,
+        paper
+    }
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
@@ -36,6 +42,7 @@ public class Book {
     private Float seriesNumber;
     private Boolean read;
     private LocalDateTime updated;  // time this book, TODO: split into creationTime and modificationTime?  use ZonedDateTime?
+    private Type bookType;
 
     @Lob
     private Byte[] image;

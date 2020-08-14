@@ -23,6 +23,7 @@
                 <th>Read</th>
                 <th>Tags</th>
                 <th>Updated</th>
+                <th>Type</th>
                 <!--<th>Cover</th>
                 <th>Path</th>-->
 
@@ -49,7 +50,9 @@
                 <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
 
                 <!--<td th:text="${#dates.format(book.updated, 'dd-MMM-yyyy')}"></td>-->
-                <td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}"></td>
+                <td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}">Updated</td>
+
+                <td th:text="${book.bookType}">Type</td>
 
 
                 <!-- <td th:text="${book.cover}"> Cover </td>
@@ -66,6 +69,7 @@
                 <th>Read</th>
                 <th>Tags</th>
                 <th>Updated</th>
+                <th>Type</th>
                 <!-- <th>Cover</th>
                 <th>Path</th>-->
 

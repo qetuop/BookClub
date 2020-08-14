@@ -118,6 +118,7 @@ public class Scanner {
             Byte[] image = null;
             String seriesName = null;
             float seriesNumber = 0;
+            //Book.Type bookType = Book.Type.audio;
 
             author = splitList[0];
 
@@ -210,6 +211,8 @@ public class Scanner {
                     book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
                 }
 
+                // HACK
+                book.setBookType(Book.Type.audio);
                 book = bookService.save(book);
                 bookMap.put(hashCode, book.getId());
 

@@ -44,7 +44,7 @@ public class BackRestore {
 
             FileWriter myWriter = new FileWriter(filename);
 
-            final String bookString = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n";
+            final String bookString = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n";
 
             myWriter.write(String.format(bookString,
                     "author",
@@ -53,7 +53,9 @@ public class BackRestore {
                     "series_number",
                     "read",
                     "tags",
-                    "updated"));
+                    "updated",
+                    "type"
+            ));
 //.map{ Bike b -> b.bikeModel }.toCollection(arrayListOf())
 //            book.getTags().stream().map(Book::getValue).collect(Collectors.toList());
 //            entities.stream().map(urEntity -> urEntity.getField1()).collect(Collectors.toList());
@@ -68,7 +70,8 @@ public class BackRestore {
                         book.getSeriesNumber() == 0 ? "" : book.getSeriesNumber(),
                         book.getRead(),
                         book.getTags() == null ? "" : book.getTags().stream().map(Tag::getValue).collect(Collectors.joining(",")),
-                        book.getUpdated()
+                        book.getUpdated(),
+                        book.getBookType()
                 ));
             }
             myWriter.close();
@@ -119,6 +122,7 @@ public class BackRestore {
                 String author = line[0];
                 String title  = line[1];
                 Boolean read  = Boolean.valueOf(line[4]);
+
                 //String[] tagArr = line[5].split(",");
                 ArrayList<String> tagList = new ArrayList<String>(Arrays.asList(line[5].split(",")));
 
