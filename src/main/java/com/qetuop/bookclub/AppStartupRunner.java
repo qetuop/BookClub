@@ -24,8 +24,6 @@ public class AppStartupRunner implements ApplicationRunner {
 	public IStorageService storageService;
 	public BookService bookService;
 
-	public FileList fileList = new FileList();
-
 	public AppStartupRunner(IStorageService storageService, BookService bookService) {
 		this.storageService = storageService;
 		this.bookService = bookService;

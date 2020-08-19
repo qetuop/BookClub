@@ -42,20 +42,18 @@ public class Scanner {
     public IStorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
     public BookService bookService;  // TODO: replace with BookService?
 
-    public FileList fileList = new FileList();
-
     public Scanner(IStorageService storageService, BookService bookService) {
         this.storageService = storageService;
         this.bookService = bookService;
     }
 
-    private Path findLargestFile(List<Path> filePaths ) {
+    private Path findLargestFile(List<Path> filePaths) {
         Path largestFile = null; // may be null
         long largestFileSize = 0;
-        for ( Path filePath : filePaths ) {
+        for (Path filePath : filePaths) {
             try {
                 long tmp = FileChannel.open(filePath).size();
-                if ( tmp > largestFileSize ) {
+                if (tmp > largestFileSize) {
                     largestFileSize = tmp;
                     largestFile = filePath;
                 }
@@ -72,30 +70,15 @@ public class Scanner {
     // TODO: pass in book type expected?
     public void parsePath(List<Path> filePaths, String rootDir) {
 
-        /*for (Path path : filePaths ) {
-            List<String> targetList = new ArrayList<>(Arrays.asList(path.toString().split(System.getProperty("file.separator"))));
-
-            Set<String> result = targetList.stream()
-                    .distinct()
-                    .filter(ignoreList::contains)
-                    .collect(Collectors.toSet());
-
-            if ( !result.isEmpty() ) {
-                return;
-            }
-
-        }*/
-
-
         // find largest image file, store for cover
         List<Path> images = filePaths.stream()
-                                    .filter(s -> s.toString().toLowerCase().endsWith(".jpg"))
-                                    .collect(Collectors.toList());
+                .filter(s -> s.toString().toLowerCase().endsWith(".jpg"))
+                .collect(Collectors.toList());
         Path coverImage = findLargestFile(images);
 
-
+        // get one file to parse out most of the book info (contained in dir path)
         Path filePath = filePaths.get(0);
-        System.out.println("\t\tparsePath::"+filePath);
+        System.out.println("parsePath::" + filePath);
 
         String fullPathString = filePath.toString().strip();
 
@@ -179,45 +162,23 @@ public class Scanner {
         }
 
         //cover = fullPathString;
-        if ( coverImage != null ) {
+        if (coverImage != null) {
             cover = coverImage.toString();
         }
 
-
-
         try {
-            if ( cover != null ) {
+            if (cover != null) {
                 FileInputStream input = new FileInputStream(new File(cover));
                 image = ArrayUtils.toObject(IOUtils.toByteArray(input));
             }
 
-
-            String[] strings = {author, seriesName, title};
-            int hashCode = Arrays.hashCode(strings);
-            //System.out.println(hashCode);
-
             Book book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
-                        /*
-            Book book = null;
-            // set the cover to the largest image found in the dir.  TODO: is this the best thing to do?
-            if (bookMap.containsKey(hashCode)) {
-                book = bookService.findById(bookMap.get(hashCode));
-                if (book != null) {
-                    if (book.getImage().length < image.length) {
-                        book.setImage(image);
-                    }
-                }
-            } else {
-                // Book(String title, String author, String path, String cover, Byte[] image, String seriesName, int seriesNumber)
-                book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
-            }
-            */
-
 
             // HACK
             book.setBookType(Book.Type.audio);
+
             book = bookService.save(book);
-            System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName()+ ", " + book.getSeriesNumber());
+            System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
             //bookMap.put(hashCode, book.getId());
 
 
@@ -238,13 +199,10 @@ public class Scanner {
         storageService.init();
 
         // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
-        //final String rootDir = "/home/brian/Projects/testdir/audio books/";
+        final String rootDir = "/home/brian/Projects/testdir/audio books/";
         //final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
         //final String rootDir = "/home/brian/Projects/testdir/test/";
-        final String rootDir = "/media/NAS/audiobooks/";
-
-        //ROOT DIR: /home/brian/Projects/testdir/audio books/
-        //file dir:/home/brian/Projects/testdir/audio books
+        //final String rootDir = "/media/NAS/audiobooks/";
 /*
         Configurations configs = new Configurations();
         InputStream inputStream = null;
@@ -276,48 +234,37 @@ public class Scanner {
 */
         System.out.println("ROOT DIR: " + rootDir);
 
-        //List<Path> dirs = fileList.createFileList(rootDir);
-
-        // keep a map of hash(author/series/title):book id for quicker lookup during operations below - worth it?
-        // link to the book object itself then add all at once to repo?  TODO: do that
-        //HashMap<Integer, Long> bookMap = new HashMap<Integer, Long>();
-
+        // walk through all dirs, handle valid books
         try {
             Files.walkFileTree(Paths.get(rootDir), new SimpleFileVisitor<Path>() {
 
+                // TODO: add a config option to control dirs to ignore
+
+                // This will skip visiting a dir listed in the ignore list.
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    if (ignoreList.contains(dir.getFileName().toString())){
-                        System.out.println("SKIPPING DIR: " + dir);
+                    if (ignoreList.contains(dir.getFileName().toString())) {
                         return SKIP_SUBTREE;
                     }
                     return CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                        throws IOException
-                {
-                    //String firstLine = Files.newBufferedReader(file, Charset.defaultCharset()).readLine();
-                    //System.out.println("FILE: " + file);
-                    return CONTINUE;
-                }
-
-                @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-                    // create list of files in dir to process TODO: filter based on expected type (mp3, jpg, epub)
-                    List<Path> files = null;
-                    try {
-                        files = Files.list(dir)
+                    // create list of files in dir to process
+                    // TODO: filter based on expected type (mp3, jpg, epub)
+                      try {
+                        List<Path> files = Files.list(dir)
                                 .filter(p -> !p.toFile().isDirectory())
                                 .collect(Collectors.toList());
+
+                        if ( !files.isEmpty() ) {
+                            parsePath(files, rootDir);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    if ( !files.isEmpty() ) {
-                        //System.out.println("ADDING DIR: " + dir);
-                        parsePath(files, rootDir);
-                    }
+
                     return CONTINUE;
                 }
             });
@@ -325,33 +272,7 @@ public class Scanner {
             e.printStackTrace();
         }
 
-
-
-
-/*        for (Path filePath : dirs) {
-            System.out.println("------New Dir: " + filePath);
-
-            List<Path> files = new ArrayList<Path>();
-            try {
-                // TODO: need to
-                files = Files.list(filePath)
-                        .filter(p -> !p.toFile().isDirectory())
-                        .collect(Collectors.toList());
-
-                //                        .filter(p -> !p.toFile().toString().contains("@eaDir"))
-                //System.out.println("FILES LEN: " + files.size());
-                // list of .mp3, .jpg, etc
-                    if (!files.isEmpty()) {
-                        parsePath(files, rootDir);
-                    }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } // for each path*/
-/*
-
+        /*
         // TAG TEST
         Book book = null;
 
