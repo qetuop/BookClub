@@ -177,6 +177,7 @@ public class BookController {
     @GetMapping("/showBooks")
     public String showBooks(Model model) {
         List<Book> books = (List<Book>) bookService.findAll();
+		books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
         model.addAttribute("books", books);
         return "showBooks";
     }

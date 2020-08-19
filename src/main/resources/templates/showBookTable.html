@@ -36,14 +36,16 @@
                 <td th:text="${book.title}"> Book Title </td>
                 <td th:text="${book.seriesName}"> Series Name</td>
 
-                <div th:if="${book.seriesName}">
+                <!-- this section looks to make Firefox filter out all rows, works in Chrome-->
+                <td>
+                <th:block th:if="${book.seriesName} != ''">
+                    <!-- format so that 1.0 -> 1, .5 -> 0.5, 0 -> "" -->
                     <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
-                        <td th:text="${result}"> Series Number </td>
+                        <span th:text="${result}"> Series Number </span>
                     </th:block>
-                </div>
-                <div th:unless="${book.seriesName}">
-                    <td></td>
-                </div>
+                </th:block>
+                <th:block th:unless="${book.seriesName} != ''"></th:block>
+                </td>
 
                 <td> <input type="checkbox" name="read" th:checked="${book.read}" /> </td>
 

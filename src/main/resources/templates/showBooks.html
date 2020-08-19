@@ -44,7 +44,7 @@
                     <p class="card-info" th:text="${book.author}">AUTHOR</p>
                 </a>
 
-                <div th:if="${book.seriesName}">
+                <div th:if="${book.seriesName} != ''">
                     <a th:href="@{/showBooks/series/{seriesName}(seriesName=${book.seriesName})}">
                         <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
                             <p class="card-info" th:text="${book.seriesName} + ' ('

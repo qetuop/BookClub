@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 
 public class FileList {
 
@@ -23,7 +28,7 @@ public class FileList {
                     if (Files.list(dir).noneMatch(d ->Files.isDirectory(d)) &&
                         Files.list(dir).allMatch(d ->Files.isRegularFile(d))){ subDirs.add(dir); }
 
-                    return FileVisitResult.CONTINUE;
+                    return CONTINUE;
                 }
             });
         } catch (IOException e) {
@@ -60,10 +65,59 @@ public class FileList {
 */
         
         System.out.println("---FileList::createFileList()::Grabbing books-----");
-        
+        final List<String> ignoreList = new ArrayList<>(Arrays.asList("_test", "@eaDir", "#recycle", "_temp", "_organize", "Warhammer", "_cleanup"));
 
         List<Path> fileWithName = new ArrayList<Path>();
-		try {
+
+        Path startPath = Paths.get(rootDir);
+        try {
+            Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+
+                    //String finalPath = dir.getName(dir.getNameCount()-1).toString();
+                    //System.out.println("FinalPath : " + finalPath);
+                    if (ignoreList.contains(dir.getFileName().toString())){
+                        System.out.println("SKIPPING DIR: " + dir);
+                        return SKIP_SUBTREE;
+                    }
+
+                    return CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException
+                {
+                    //String firstLine = Files.newBufferedReader(file, Charset.defaultCharset()).readLine();
+                    //System.out.println("FILE: " + file);
+                    return CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    List<Path> files = null;
+                    try {
+                        files = Files.list(dir)
+                                .filter(p -> !p.toFile().isDirectory())
+                                .collect(Collectors.toList());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if ( !files.isEmpty() ) {
+                        System.out.println("ADDING DIR: " + dir);
+                        fileWithName.add(dir);
+                    }
+                    return CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+		/*try {
 			// add ".map(Path::getFileName)" to just get filename
 			fileWithName = Files.walk(configFilePath, FileVisitOption.FOLLOW_LINKS)
                     .filter(Files::isDirectory)
@@ -76,7 +130,7 @@ public class FileList {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 		System.out.println("---Done-----");
 //.filter(f -> extensions.stream().anyMatch(f::endsWith))
 		
