@@ -72,7 +72,12 @@ public class Book {
         this.author = author;
         this.path = path;
         this.cover = cover;
-        this.image = image.clone();// TODO: what to set to
+        if (image == null) {
+            image = null;
+        }
+        else {
+            this.image = image.clone();
+        }
         this.seriesName = seriesName;
         this.seriesNumber = seriesNumber;
         this.read = read;
