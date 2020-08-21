@@ -1,19 +1,17 @@
 package com.qetuop.bookclub.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Comparator;
+import java.util.*;
 
 import com.qetuop.bookclub.BackRestore;
 import com.qetuop.bookclub.repository.BookRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.Scanner;
 
+import org.json.JSONArray;
 
 import java.util.stream.Collectors;
 
@@ -237,6 +236,21 @@ public class BookController {
 		System.out.println("HERE:POST toggleRead/:" + id + ":");
 		bookService.setRead(Long.valueOf(id), true);
 		return "redirect:/";
+	}
+	@PostMapping("/updateBooks")
+	//@RequestMapping(value = "/updateBooks", headers = "Accept=application/json", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
+	public String updateBooks(@RequestBody Map<String,Object> body) {
+		System.out.println("HERE:POST updateBooks/:");
+
+		ArrayList jsonArray = (ArrayList)body.get("ids");
+		System.out.println("jsonArray:" + jsonArray.size());
+		for ( String id : (List<String>)jsonArray ) {
+			System.out.println("ID: " + id);
+			bookService.setRead(Long.valueOf(id), true);
+		}
+
+		// TODO: what to put here?
+		return "showBookTable";
 	}
 
 } // BookController
