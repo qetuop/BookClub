@@ -42,7 +42,7 @@ import com.qetuop.bookclub.service.BookService;
 
 @Controller
 public class BookController {
-    
+
     private final IStorageService storageService;
     private final BookService bookService;
 
@@ -50,52 +50,52 @@ public class BookController {
     private final BookRepository bookRepository;
 
     private BackRestore backRestore;
-    
+
     @Autowired
-	public BookController(IStorageService storageService, BookService bookService, BookRepository bookRepository) {
-		this.storageService = storageService;
-		this.bookService = bookService;
-		this.bookRepository = bookRepository;
-    }    
+    public BookController(IStorageService storageService, BookService bookService, BookRepository bookRepository) {
+        this.storageService = storageService;
+        this.bookService = bookService;
+        this.bookRepository = bookRepository;
+    }
 
     @GetMapping("/")
-	public String listUploadedFiles(Model model) throws IOException {
-		System.out.println("HERE:GET/ listUploadedFiles");
+    public String listUploadedFiles(Model model) throws IOException {
+        System.out.println("HERE:GET/ listUploadedFiles");
 
-		model.addAttribute("files", storageService.loadAll().map(
-				path -> MvcUriComponentsBuilder.fromMethodName(BookController.class,
-						"serveFile", path.getFileName().toString()).build().toUri().toString())
-				.collect(Collectors.toList()));
+        model.addAttribute("files", storageService.loadAll().map(
+                path -> MvcUriComponentsBuilder.fromMethodName(BookController.class,
+                        "serveFile", path.getFileName().toString()).build().toUri().toString())
+                .collect(Collectors.toList()));
 
-		return "uploadForm";
+        return "uploadForm";
     }
-    
+
     @PostMapping("/")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file,
-			RedirectAttributes redirectAttributes) {
+    public String handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   RedirectAttributes redirectAttributes) {
 
-		System.out.println("HERE:Post/ ");
+        System.out.println("HERE:Post/ ");
 
-		storageService.store(file);
-		//storageService.storeDB(file);
-		bookService.saveImageFile(1L,file);
-		redirectAttributes.addFlashAttribute("message",
-				"You successfully uploaded " + file.getOriginalFilename() + "!");
+        storageService.store(file);
+        //storageService.storeDB(file);
+        bookService.saveImageFile(1L, file);
+        redirectAttributes.addFlashAttribute("message",
+                "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-		return "redirect:/";
+        return "redirect:/";
     }
-    
-    @GetMapping(path="/books/{id}/cover")
+
+    @GetMapping(path = "/books/{id}/cover")
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
         Book book = bookService.findById(Long.valueOf(id));
-        
+
         //System.out.println("COVER ID:"+book.getSeriesName());
 
         if (book.getImage() != null) {
             byte[] byteArray = new byte[book.getImage().length];
             int i = 0;
 
-            for (Byte wrappedByte : book.getImage()){
+            for (Byte wrappedByte : book.getImage()) {
                 byteArray[i++] = wrappedByte; //auto unboxing
             }
 
@@ -106,32 +106,31 @@ public class BookController {
     }
 
 
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        System.out.println("HERE:serveFile " + filename);
 
-	@GetMapping("/files/{filename:.+}")
-	@ResponseBody
-	public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-		System.out.println("HERE:serveFile "+filename);
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
 
-		Resource file = storageService.loadAsResource(filename);
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-				"attachment; filename=\"" + file.getFilename() + "\"").body(file);
-	}
+    @GetMapping("/image/{filename:.+}")
+    @ResponseBody
+    public byte[] getImage(@PathVariable String filename) throws IOException {
+        System.out.println("HERE:getImage " + filename);
 
-	@GetMapping("/image/{filename:.+}")
-	@ResponseBody
-	public  byte[] getImage(@PathVariable String filename) throws IOException {
-		System.out.println("HERE:getImage "+filename);
+        Resource file = storageService.loadAsResource(filename);
+        //InputStream in = getClass().getResourceAsStream(file.getInputStream());
 
-		Resource file = storageService.loadAsResource(filename);
-		//InputStream in = getClass().getResourceAsStream(file.getInputStream());
-		
-    	return IOUtils.toByteArray(file.getInputStream());
-	}
+        return IOUtils.toByteArray(file.getInputStream());
+    }
 
-	@ExceptionHandler(StorageFileNotFoundException.class)
-	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-		return ResponseEntity.notFound().build();
-	}
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().build();
+    }
 
     @PostMapping("/scan")
     public String scan() {
@@ -141,42 +140,40 @@ public class BookController {
         return "redirect:/";
     }
 
-	@PostMapping("/backup")
-	public String backup() {
-		System.out.println("HERE:POST backup/ ");
-		BackRestore backRestore = new BackRestore(bookService);
-		backRestore.backup();
-		return "redirect:/";
-	}
+    @PostMapping("/backup")
+    public String backup() {
+        System.out.println("HERE:POST backup/ ");
+        BackRestore backRestore = new BackRestore(bookService);
+        backRestore.backup();
+        return "redirect:/";
+    }
 
-	@PostMapping("/restore")
-	public String restore() {
-		System.out.println("HERE:POST restore/ ");
-		BackRestore backRestore = new BackRestore(bookService);
-		backRestore.restore();
-		return "redirect:/";
-	}
+    @PostMapping("/restore")
+    public String restore() {
+        System.out.println("HERE:POST restore/ ");
+        BackRestore backRestore = new BackRestore(bookService);
+        backRestore.restore();
+        return "redirect:/";
+    }
 
-	@GetMapping("/showBookTable")
-	public String showBookTable(Model model) {
-		List<Book> books = (List<Book>) bookService.findAll();
+    @GetMapping("/showBookTable")
+    public String showBookTable(Model model) {
+        List<Book> books = (List<Book>) bookService.findAll();
 //		for (Book book : books) {
 //			System.out.println(book.getTitle() + ":" + book.getSeriesName());
 //		}
-		//books.sort(Comparator.comparing(Book::getTitle));
-		books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
+        //books.sort(Comparator.comparing(Book::getTitle));
+        books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
 
 
-
-
-		model.addAttribute("books", books);
-		return "showBookTable";
-	}
+        model.addAttribute("books", books);
+        return "showBookTable";
+    }
 
     @GetMapping("/showBooks")
     public String showBooks(Model model) {
         List<Book> books = (List<Book>) bookService.findAll();
-		books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
+        books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
         model.addAttribute("books", books);
         return "showBooks";
     }
@@ -188,69 +185,99 @@ public class BookController {
         return "showBooks";
     }
 
-	@GetMapping("/showBooks/series/{seriesName}")
-	public String showBooksBySeries(@PathVariable String seriesName, Model model) {
-		List<Book> books = (List<Book>) bookService.findBySeriesName(seriesName);
-		books.sort(Comparator.comparing(Book::getSeriesNumber));
-		model.addAttribute("books", books);
-		return "showBooks";
-	}
+    @GetMapping("/showBooks/series/{seriesName}")
+    public String showBooksBySeries(@PathVariable String seriesName, Model model) {
+        List<Book> books = (List<Book>) bookService.findBySeriesName(seriesName);
+        books.sort(Comparator.comparing(Book::getSeriesNumber));
+        model.addAttribute("books", books);
+        return "showBooks";
+    }
 
-	@GetMapping("/showSeries")
-	public String showSeries(Model model) {
+    @GetMapping("/showSeries")
+    public String showSeries(Model model) {
 
-		List<Book> books = (List<Book>) bookService.findAll();
+        List<Book> books = (List<Book>) bookService.findAll();
 
-		HashMap<String, ArrayList<Book>> seriesMap = new HashMap<String, ArrayList<Book>>();
+        HashMap<String, ArrayList<Book>> seriesMap = new HashMap<String, ArrayList<Book>>();
 
-		for (Book book : books) {
-			System.out.println(book.getSeriesName());
-			String seriesName = book.getSeriesName();
+        for (Book book : books) {
+            System.out.println(book.getSeriesName());
+            String seriesName = book.getSeriesName();
 
-			if ( seriesName != null ) {
+            if (seriesName != null) {
 
-				// add this book to the list, sort on series number
-				if ( seriesMap.containsKey(seriesName) ) {
-					ArrayList<Book> bookList = seriesMap.get(seriesName);
-					bookList.add(book);
-					bookList.sort(Comparator.comparing(Book::getSeriesNumber));
-				}
-				else {
-					seriesMap.put(seriesName, new ArrayList<Book>(Arrays.asList(book)));
-				}
-			} // series book
-		} // for each book
+                // add this book to the list, sort on series number
+                if (seriesMap.containsKey(seriesName)) {
+                    ArrayList<Book> bookList = seriesMap.get(seriesName);
+                    bookList.add(book);
+                    bookList.sort(Comparator.comparing(Book::getSeriesNumber));
+                } else {
+                    seriesMap.put(seriesName, new ArrayList<Book>(Arrays.asList(book)));
+                }
+            } // series book
+        } // for each book
 
-		model.addAttribute("seriesMap", seriesMap);
-		return "showSeries";
-	}
+        model.addAttribute("seriesMap", seriesMap);
+        return "showSeries";
+    }
 
-	@GetMapping(path="/book/{id}")
-	public String showBook(@PathVariable String id, Model model) throws IOException {
-		Book book = bookService.findById(Long.valueOf(id));
-		model.addAttribute("book", book);
-		return "showBook";
-	}
-	@PostMapping("/toggleRead/{id}")
-	public String toggleRead(@PathVariable String id) {
-		System.out.println("HERE:POST toggleRead/:" + id + ":");
-		bookService.setRead(Long.valueOf(id), true);
-		return "redirect:/";
-	}
-	@PostMapping("/updateBooks")
-	//@RequestMapping(value = "/updateBooks", headers = "Accept=application/json", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
-	public String updateBooks(@RequestBody Map<String,Object> body) {
-		System.out.println("HERE:POST updateBooks/:");
+    @GetMapping(path = "/book/{id}")
+    public String showBook(@PathVariable String id, Model model) throws IOException {
+        Book book = bookService.findById(Long.valueOf(id));
+        model.addAttribute("book", book);
+        return "showBook";
+    }
 
-		ArrayList jsonArray = (ArrayList)body.get("ids");
-		System.out.println("jsonArray:" + jsonArray.size());
-		for ( String id : (List<String>)jsonArray ) {
-			System.out.println("ID: " + id);
-			bookService.setRead(Long.valueOf(id), true);
-		}
+    @PostMapping("/toggleRead/{id}")
+    public String toggleRead(@PathVariable String id) {
+        System.out.println("HERE:POST toggleRead/:" + id + ":");
+        bookService.setRead(Long.valueOf(id), true);
+        return "redirect:/";
+    }
 
-		// TODO: what to put here?
-		return "showBookTable";
-	}
+    @PostMapping("/updateBooks")
+    //@RequestMapping(value = "/updateBooks", headers = "Accept=application/json", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
+    public String updateBooks(@RequestBody Map<String, Object> body) {
+        System.out.println("HERE:POST updateBooks/:");
+
+        ArrayList ids = (ArrayList) body.get("ids");
+        System.out.println("ids:" + ids.size());
+
+        Boolean read = (Boolean) body.get("read"); // may be null = do nothing
+        System.out.println("read: " + read);
+
+
+        for (String id : (List<String>) ids) {
+            System.out.println("ID: " + id);
+
+            // read/unread
+            if (read != null) {
+                bookService.setRead(Long.valueOf(id), read.booleanValue());
+            }
+
+            // add all tags
+            String addTagString = (String) body.get("addTags");
+            System.out.println("addTags:" + addTagString);
+            List<String> addTagList = Arrays.asList(addTagString.split("\\s*,\\s*"));
+            for (String tag : addTagList) {
+                System.out.println("Add tag:*" + tag + "*");
+                bookService.addTag(Long.valueOf(id), tag);
+            } // for each tag
+
+            // remove all tags
+            String delTagString = (String) body.get("delTags");
+            System.out.println("delTags:" + delTagString);
+            List<String> delTagList = Arrays.asList(delTagString.split("\\s*,\\s*"));
+            for (String tag : delTagList) {
+                System.out.println("Del tag::*" + tag + "*");
+                bookService.delTag(Long.valueOf(id), tag);
+            } // for each tag
+
+        } // for each book
+
+
+        // TODO: what to put here?
+        return "showBookTable";
+    }
 
 } // BookController

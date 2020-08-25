@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
 
+import com.qetuop.bookclub.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,7 +114,33 @@ public class BookService implements IBookService{
 
     public void setRead(Long id, boolean read) {
         Book book = repository.findById(id).get();
-        book.setRead(true);
+        book.setRead(read);
+        repository.save(book);
+    }
+
+    @Override
+    public void addTag(Long id, String _tag) {
+        Book book = repository.findById(id).get();
+
+        // first see if tag exists for book, TODO: can i have a Tag table with unique tags?
+        // do i need a TagRepository and TagService?
+
+        Tag tag = new Tag(_tag);
+
+        book.addTag(tag);
+        repository.save(book);
+    }
+
+    @Override
+    public void delTag(Long id, String _tag) {
+        Book book = repository.findById(id).get();
+
+        // first see if tag exists for book, TODO: can i have a Tag table with unique tags?
+        // do i need a TagRepository and TagService?
+
+        Tag tag = new Tag(_tag);
+
+        book.removeTag(tag);
         repository.save(book);
     }
 }

@@ -5,90 +5,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
-
+    <link th:href="@{/css/showTable.css}" href="/css/showTable.css" rel="stylesheet" />
     <style>
-        .hover_bkgr_fricc {
-            background: rgba(0, 0, 0, .4);
-            cursor: pointer;
-            display: none;
-            height: 100%;
-            position: fixed;
-            text-align: center;
-            top: 0;
-            width: 100%;
-            z-index: 10000;
-        }
-        
-        .hover_bkgr_fricc .helper {
-            display: inline-block;
-            height: 100%;
-            vertical-align: middle;
-        }
-        
-        .hover_bkgr_fricc>div {
-            background-color: #fff;
-            box-shadow: 10px 10px 60px #555;
-            display: inline-block;
-            height: auto;
-            max-width: 551px;
-            min-height: 100px;
-            vertical-align: middle;
-            width: 60%;
-            position: relative;
-            border-radius: 8px;
-            padding: 15px 5%;
-        }
-        
-        .popupCloseButton {
-            background-color: #fff;
-            border: 3px solid #999;
-            border-radius: 50px;
-            cursor: pointer;
-            display: inline-block;
-            font-family: arial;
-            font-weight: bold;
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            font-size: 25px;
-            line-height: 30px;
-            width: 30px;
-            height: 30px;
-            text-align: center;
-        }
-        
-        .popupCloseButton:hover {
-            background-color: #ccc;
-        }
-        
-        .trigger_popup_fricc {
-            cursor: pointer;
-            font-size: 20px;
-            margin: 20px;
-            display: inline-block;
-            font-weight: bold;
-        }
-        
-        .switch-toggle {
-            float: left;
-            background: #242729;
-        }
-        
-        .switch-toggle input {
-            position: absolute;
-            opacity: 0;
-        }
-        
-        .switch-toggle input+label {
-            padding: 7px;
-            float: left;
-            color: #fff;
-            cursor: pointer;
-        }
-        
-        .switch-toggle input:checked+label {
-            background: green;
-        }
+
     </style>
 
 </head>
@@ -167,18 +86,27 @@
     <div class="hover_bkgr_fricc">
         <span class="helper"></span>
         <div>
+
             <div class="switch-toggle switch-3 switch-candy">
-                <input id="on" name="state-d" type="radio" checked="" />
-                <label for="on" onclick="">ON</label>
+                <input id="read" name="readToggle" type="radio" value=true checked="" />
+                <label for="read" onclick="readState=true">Read</label>
 
-                <input id="na" name="state-d" type="radio" checked="checked" />
-                <label for="na" class="disabled" onclick="">N/A</label>
+                <input id="na" name="readToggle" type="radio" value=null checked="checked" />
+                <label for="na" class="disabled" onclick="readState=null">N/A</label>
 
-                <input id="off" name="state-d" type="radio" />
-                <label for="off" onclick="">OFF</label>
+                <input id="unread" name="readToggle" value=false type="radio" />
+                <label for="unread" onclick="readState=false">Unread</label>
             </div>
+            <br></br>
 
-            <div class="popupCloseButton">&times;</div>
+            <label for="addTag">Add Tag:</label>
+            <input type="text" id="addTag" name="addTag"><br><br>
+            <label for="delTag">Delete Tag:</label>
+            <input type="text" id="delTag" name="delTag"><br><br>
+
+            <input type="submit" value="Submit" onclick="editRows()">
+
+            <div class="popupCloseButton" onclick="$('.hover_bkgr_fricc').hide()">&times;</div>
 
         </div>
     </div>
@@ -191,6 +119,8 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
 
     <script>
+        var readState = null;
+
         $(document).ready(function() {
 
             $.fn.dataTable.moment('M/D/YYYY');
@@ -217,7 +147,7 @@
                 }, {
                     text: 'Edit',
                     action: function(e, dt, node, config) {
-                        editRows(e, dt, node, config);
+                        $('.hover_bkgr_fricc').show()
                     }
                 }],
 
@@ -229,31 +159,43 @@
             });
         });
 
-        function editRows(e, dt, node, config) {
-            //    var popup = document.getElementById("myPopup");
-            //popup.classList.toggle("show");
+        function editRows() {
+            $('.hover_bkgr_fricc').hide();
 
-            $('.hover_bkgr_fricc').show();
+            console.log(readState)
 
+            //var state = $('#readToggle').val()
+            //console.log(state)
+            //var state = $(readToggle).val();
 
-            $('.popupCloseButton').click(function() {
-                $('.hover_bkgr_fricc').hide();
-            });
 
             var table = $('#example').DataTable();
+
+            // grab all selected rows
             var data = table.rows({
                 selected: true
             }).data();
 
+            // create list of ids to send to controller
             var ids = [];
-
             for (var i = 0; i < data.length; i++) {
                 console.log("ID: " + data[i][0]);
                 ids.push(data[i][0]);
             }
 
+            // grab add tags
+            var addTags = document.getElementById('addTag');
+            var delTags = document.getElementById('delTag');
+
+            console.log(addTags.value)
+            console.log(delTags.value)
+
+
             var myJSON = JSON.stringify({
-                ids: ids
+                ids: ids,
+                read: readState,
+                addTags: addTags.value,
+                delTags: delTags.value
             });
 
             $.ajax({
@@ -265,7 +207,7 @@
                     'Content-Type': 'application/json'
                 },
                 success: function(response) {
-                    console.log(response)
+                    //console.log(response)
                 },
                 error: function(xhr) {
                     //Do Something to handle error

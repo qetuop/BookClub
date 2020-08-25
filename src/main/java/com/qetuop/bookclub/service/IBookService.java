@@ -26,4 +26,6 @@ public interface IBookService {
 
     void saveImageFile(long id, MultipartFile file);
     void setRead(Long id, boolean read);
+    void addTag(Long id, String tag);
+    void delTag(Long id, String tag);
 }
