@@ -7,7 +7,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import com.qetuop.bookclub.model.Tag;
+
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.IOUtils;
@@ -27,9 +27,12 @@ import org.slf4j.LoggerFactory;
 //import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qetuop.bookclub.service.IStorageService;
+import com.qetuop.bookclub.service.StorageService;
 import com.qetuop.bookclub.service.BookService;
 import com.qetuop.bookclub.model.Book;
+
+import com.qetuop.bookclub.service.TagService;
+import com.qetuop.bookclub.model.Tag;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
@@ -39,12 +42,14 @@ public class Scanner {
     private static final List<String> ignoreList = new ArrayList<>(Arrays.asList("@eaDir", "#recycle", "_temp", "_organize", "Warhammer", "_cleanup"));
 
     @Autowired
-    public IStorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
-    public BookService bookService;  // TODO: replace with BookService?
+    public StorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
+    public BookService bookService;
+    public TagService tagService;
 
-    public Scanner(IStorageService storageService, BookService bookService) {
+    public Scanner(StorageService storageService, BookService bookService, TagService tagService) {
         this.storageService = storageService;
         this.bookService = bookService;
+        this.tagService = tagService;
     }
 
     private Path findLargestFile(List<Path> filePaths) {
@@ -272,7 +277,7 @@ public class Scanner {
             e.printStackTrace();
         }
 
-        /*
+
         // TAG TEST
         Book book = null;
 
@@ -285,9 +290,20 @@ public class Scanner {
         book.addTag(new Tag("Fantasy"));
         book = bookService.save(book);
 
+        Tag tag = tagService.findByValue("Fantasy");
+        if ( tag != null ) {
+            System.out.println(String.format("tag %s not found",tag ));
+        }
+
         book = bookService.findById(4);
-        book.addTag(new Tag("SciFi"));
-        book.addTag(new Tag("Fantasy"));
+        tag = tagService.findByValue("Fantasy");
+        if ( tag != null ) {
+            book.addTag(tag);
+        }
+        tag = tagService.findByValue("SciFi");
+        if ( tag != null ) {
+            book.addTag(tag);
+        }
         book = bookService.save(book);
         
 
@@ -297,10 +313,10 @@ public class Scanner {
 
         Set<Tag> tags = book.getTags();
         System.out.println("Result len: "+tags.size());
-
-        for (Tag tag : tags ) {
-            System.out.println("TAG: " + tag.getId() + ":" + tag.getValue());
+        for (Tag tag0 : tags) {
+            System.out.println("TAG: " + tag0.getId() + ":" + tag0.getValue());
         }
+
         System.out.println("\n\n--------------------------------------\n\n");
 
         System.out.println("TYRING TO FIND TAG");
@@ -308,7 +324,13 @@ public class Scanner {
         System.out.println("Result len: "+books.size());
         for (Book book1 : books) {
             System.out.println("book1: " + book1.getTitle());
-        }*/
+        }
+        System.out.println("\n\n--------------------------------------\n\n");
+        System.out.println("PRINT ALL TAGS");
+        List<Tag> allTags = tagService.findAll();
+        for ( Tag tag2 : allTags ) {
+            System.out.println("Tag(" + tag2.getId() + "): " + tag2.getValue());
+        }
 
     } // scan
 } // class Scanner

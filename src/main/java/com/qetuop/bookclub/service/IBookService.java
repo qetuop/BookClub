@@ -2,6 +2,7 @@ package com.qetuop.bookclub.service;
 
 import java.util.List;
 
+import com.qetuop.bookclub.model.Tag;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,6 @@ public interface IBookService {
 
     void saveImageFile(long id, MultipartFile file);
     void setRead(Long id, boolean read);
-    void addTag(Long id, String tag);
-    void delTag(Long id, String tag);
+    void addTag(Long id, Tag tag);
+    void delTag(Long id, Tag tag);
 }

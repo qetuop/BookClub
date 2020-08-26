@@ -119,26 +119,26 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public void addTag(Long id, String _tag) {
+    public void addTag(Long id, Tag tag) {
         Book book = repository.findById(id).get();
 
         // first see if tag exists for book, TODO: can i have a Tag table with unique tags?
         // do i need a TagRepository and TagService?
 
-        Tag tag = new Tag(_tag);
+        //Tag tag = new Tag(_tag);
 
         book.addTag(tag);
         repository.save(book);
     }
 
     @Override
-    public void delTag(Long id, String _tag) {
+    public void delTag(Long id, Tag tag) {
         Book book = repository.findById(id).get();
 
         // first see if tag exists for book, TODO: can i have a Tag table with unique tags?
         // do i need a TagRepository and TagService?
 
-        Tag tag = new Tag(_tag);
+        //Tag tag = new Tag(_tag);
 
         book.removeTag(tag);
         repository.save(book);

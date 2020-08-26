@@ -12,8 +12,9 @@ import org.springframework.stereotype.Component;
 //import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qetuop.bookclub.service.IStorageService;
+import com.qetuop.bookclub.service.StorageService;
 import com.qetuop.bookclub.service.BookService;
+import com.qetuop.bookclub.service.TagService;
 
 @Component
 public class AppStartupRunner implements ApplicationRunner {
@@ -21,19 +22,21 @@ public class AppStartupRunner implements ApplicationRunner {
 	public static int counter;
 
 	@Autowired
-	public IStorageService storageService;
+	public StorageService storageService;
 	public BookService bookService;
+	public TagService tagService;
 
-	public AppStartupRunner(IStorageService storageService, BookService bookService) {
+	public AppStartupRunner(StorageService storageService, BookService bookService, TagService tagService) {
 		this.storageService = storageService;
 		this.bookService = bookService;
+		this.tagService = tagService;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		LOG.info("AppStartupRunner::run");
 
-		Scanner scanner = new Scanner(storageService, bookService);
+		Scanner scanner = new Scanner(storageService, bookService, tagService);
 		scanner.scan();
 /*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent

@@ -3,6 +3,7 @@ package com.qetuop.bookclub.controller;
 import java.util.*;
 
 import com.qetuop.bookclub.BackRestore;
+import com.qetuop.bookclub.model.Tag;
 import com.qetuop.bookclub.repository.BookRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,25 +38,28 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.qetuop.bookclub.service.StorageFileNotFoundException;
-import com.qetuop.bookclub.service.IStorageService;
+import com.qetuop.bookclub.service.StorageService;
 import com.qetuop.bookclub.service.BookService;
+import com.qetuop.bookclub.service.TagService;
 
 @Controller
 public class BookController {
 
-    private final IStorageService storageService;
+    private final StorageService storageService;
     private final BookService bookService;
+    private final TagService tagService;
 
     // TODO: don't access repository directly but use service?
-    private final BookRepository bookRepository;
+    //private final BookRepository bookRepository;
 
     private BackRestore backRestore;
 
     @Autowired
-    public BookController(IStorageService storageService, BookService bookService, BookRepository bookRepository) {
+    public BookController(StorageService storageService, BookService bookService,TagService tagService) {
         this.storageService = storageService;
         this.bookService = bookService;
-        this.bookRepository = bookRepository;
+        //this.bookRepository = bookRepository;
+        this.tagService = tagService;
     }
 
     @GetMapping("/")
@@ -135,7 +139,7 @@ public class BookController {
     @PostMapping("/scan")
     public String scan() {
         System.out.println("HERE:POST scan/ ");
-        Scanner scanner = new Scanner(storageService, bookService);
+        Scanner scanner = new Scanner(storageService, bookService, tagService);
         scanner.scan();
         return "redirect:/";
     }
@@ -259,8 +263,12 @@ public class BookController {
             String addTagString = (String) body.get("addTags");
             System.out.println("addTags:" + addTagString);
             List<String> addTagList = Arrays.asList(addTagString.split("\\s*,\\s*"));
-            for (String tag : addTagList) {
-                System.out.println("Add tag:*" + tag + "*");
+            for (String tagString : addTagList) {
+                System.out.println("Add tag:*" + tagString + "*");
+                Tag tag = tagService.findByValue(tagString);
+                if ( tag == null ) {
+                    tag = new Tag(tagString);
+                }
                 bookService.addTag(Long.valueOf(id), tag);
             } // for each tag
 
@@ -268,9 +276,17 @@ public class BookController {
             String delTagString = (String) body.get("delTags");
             System.out.println("delTags:" + delTagString);
             List<String> delTagList = Arrays.asList(delTagString.split("\\s*,\\s*"));
-            for (String tag : delTagList) {
-                System.out.println("Del tag::*" + tag + "*");
-                bookService.delTag(Long.valueOf(id), tag);
+            for (String tagString : delTagList) {
+                System.out.println("Del tag::*" + tagString + "*");
+                //TODO: can i just create a Tag object and search the books.tags?
+                Tag tag = tagService.findByValue(tagString);
+                if ( tag != null ) {
+                    bookService.delTag(Long.valueOf(id), tag);
+                }
+                else {
+                    System.out.println("SHOULD NOT BE HERE, how did the tag get created:*" + tagString +"*");
+                }
+
             } // for each tag
 
         } // for each book
