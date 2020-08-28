@@ -37,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.qetuop.bookclub.service.StorageFileNotFoundException;
 import com.qetuop.bookclub.service.StorageService;
 import com.qetuop.bookclub.service.BookService;
@@ -163,13 +165,7 @@ public class BookController {
     @GetMapping("/showBookTable")
     public String showBookTable(Model model) {
         List<Book> books = (List<Book>) bookService.findAll();
-//		for (Book book : books) {
-//			System.out.println(book.getTitle() + ":" + book.getSeriesName());
-//		}
-        //books.sort(Comparator.comparing(Book::getTitle));
         books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
-
-
         model.addAttribute("books", books);
         return "showBookTable";
     }
@@ -197,6 +193,7 @@ public class BookController {
         return "showBooks";
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping("/showSeries")
     public String showSeries(Model model) {
 
@@ -239,16 +236,18 @@ public class BookController {
         return "redirect:/";
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/updateBooks")
     //@RequestMapping(value = "/updateBooks", headers = "Accept=application/json", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     public String updateBooks(@RequestBody Map<String, Object> body) {
         System.out.println("HERE:POST updateBooks/:");
 
-        ArrayList ids = (ArrayList) body.get("ids");
+        ArrayList<String> ids = (ArrayList<String>) body.get("ids");
         System.out.println("ids:" + ids.size());
 
         Boolean read = (Boolean) body.get("read"); // may be null = do nothing
         System.out.println("read: " + read);
+
 
 
         for (String id : (List<String>) ids) {
@@ -261,15 +260,17 @@ public class BookController {
 
             // add all tags
             String addTagString = (String) body.get("addTags");
-            System.out.println("addTags:" + addTagString);
-            List<String> addTagList = Arrays.asList(addTagString.split("\\s*,\\s*"));
+            System.out.println("addTags:*" + addTagString + "*");
+            List<String> addTagList = Arrays.asList(addTagString.split(",")); // empty string returns an array with an empty string!
             for (String tagString : addTagList) {
-                System.out.println("Add tag:*" + tagString + "*");
-                Tag tag = tagService.findByValue(tagString);
-                if ( tag == null ) {
-                    tag = new Tag(tagString);
+                if ( !tagString.isEmpty() ) {
+                    System.out.println("Add tag:*" + tagString + "*");
+                    Tag tag = tagService.findByValue(tagString);
+                    if ( tag == null ) {
+                        tag = new Tag(tagString);
+                    }
+                    bookService.addTag(Long.valueOf(id), tag);
                 }
-                bookService.addTag(Long.valueOf(id), tag);
             } // for each tag
 
             // remove all tags
@@ -277,22 +278,26 @@ public class BookController {
             System.out.println("delTags:" + delTagString);
             List<String> delTagList = Arrays.asList(delTagString.split("\\s*,\\s*"));
             for (String tagString : delTagList) {
-                System.out.println("Del tag::*" + tagString + "*");
-                //TODO: can i just create a Tag object and search the books.tags?
-                Tag tag = tagService.findByValue(tagString);
-                if ( tag != null ) {
-                    bookService.delTag(Long.valueOf(id), tag);
+                if ( !tagString.isEmpty() ) {
+                    System.out.println("Del tag::*" + tagString + "*");
+                    //TODO: can i just create a Tag object and search the books.tags?
+                    Tag tag = tagService.findByValue(tagString);
+                    if ( tag != null ) {
+                        bookService.delTag(Long.valueOf(id), tag);
+                    }
+                    else {
+                        System.out.println("SHOULD NOT BE HERE, how did the tag get created:*" + tagString +"*");
+                    }
                 }
-                else {
-                    System.out.println("SHOULD NOT BE HERE, how did the tag get created:*" + tagString +"*");
-                }
-
             } // for each tag
 
         } // for each book
 
 
         // TODO: what to put here?
+        //List<Book> books = (List<Book>) bookService.findAll();
+        //books.sort(Comparator.comparing(Book::getAuthor).thenComparing(Book::getSeriesName).thenComparing(Book::getSeriesNumber));
+        //model.addAttribute("books", books);
         return "showBookTable";
     }
 

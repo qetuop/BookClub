@@ -207,7 +207,9 @@
                     'Content-Type': 'application/json'
                 },
                 success: function(response) {
-                    //console.log(response)
+                    console.log("update success")
+                        //table.draw();
+                    table.fnDraw();
                 },
                 error: function(xhr) {
                     //Do Something to handle error
@@ -231,9 +233,7 @@
 
                 $('input', this.footer()).on('keyup change clear', function() {
                     if (that.search() !== this.value) {
-                        that
-                            .search(this.value)
-                            .draw();
+                        that.search(this.value).draw();
                     }
                 });
             });

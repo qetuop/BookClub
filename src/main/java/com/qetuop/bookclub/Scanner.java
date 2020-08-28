@@ -34,6 +34,7 @@ import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.service.TagService;
 import com.qetuop.bookclub.model.Tag;
 
+import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 
@@ -182,11 +183,14 @@ public class Scanner {
             // HACK
             book.setBookType(Book.Type.audio);
 
-            book = bookService.save(book);
-            System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
-            //bookMap.put(hashCode, book.getId());
-
-
+            Book tmpBook = bookService.findByAuthorAndTitle(author,title);
+            if ( tmpBook != null ) {
+                System.out.println(String.format("BOOK %s %s is already in DB", title, author));
+            }
+            else {
+                book = bookService.save(book);
+                System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
+            }
         } catch (final FileNotFoundException e) {
             // TODO Auto-generated catch block
             //e.printStackTrace();
@@ -241,7 +245,7 @@ public class Scanner {
 
         // walk through all dirs, handle valid books
         try {
-            Files.walkFileTree(Paths.get(rootDir), new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(Paths.get(rootDir), EnumSet.of(FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
 
                 // TODO: add a config option to control dirs to ignore
 
@@ -278,32 +282,28 @@ public class Scanner {
         }
 
 
-        // TAG TEST
+        /*// TAG TEST
         Book book = null;
-
+        Tag fantTag = tagService.findByValue("Fantasy");
+        Tag sciTag = tagService.findByValue("SciFi");
+        if ( fantTag == null ) {
+            fantTag = new Tag("Fantasy");
+        }
+        if ( sciTag == null ) {
+            sciTag = new Tag("SciFi");
+        }
 
         book = bookService.findById(2);
-        book.addTag(new Tag("SciFi"));
+        book.addTag(sciTag);
         book = bookService.save(book);
 
         book = bookService.findById(3);
-        book.addTag(new Tag("Fantasy"));
+        book.addTag(fantTag);
         book = bookService.save(book);
 
-        Tag tag = tagService.findByValue("Fantasy");
-        if ( tag != null ) {
-            System.out.println(String.format("tag %s not found",tag ));
-        }
-
         book = bookService.findById(4);
-        tag = tagService.findByValue("Fantasy");
-        if ( tag != null ) {
-            book.addTag(tag);
-        }
-        tag = tagService.findByValue("SciFi");
-        if ( tag != null ) {
-            book.addTag(tag);
-        }
+        book.addTag(fantTag);
+        book.addTag(sciTag);
         book = bookService.save(book);
         
 
@@ -330,7 +330,7 @@ public class Scanner {
         List<Tag> allTags = tagService.findAll();
         for ( Tag tag2 : allTags ) {
             System.out.println("Tag(" + tag2.getId() + "): " + tag2.getValue());
-        }
+        }*/
 
     } // scan
 } // class Scanner
