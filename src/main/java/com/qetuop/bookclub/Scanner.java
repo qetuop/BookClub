@@ -4,6 +4,8 @@ package com.qetuop.bookclub;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -151,54 +153,55 @@ public class Scanner {
                 String seriesNumberStr = splitTitle[splitTitle.length - 1];
                 try {
                     seriesNumber = Float.parseFloat(seriesNumberStr);
+                    title = titleFull.substring(0, titleFull.indexOf(seriesNumberStr) - 1);
                 } catch (NumberFormatException e) {
                     System.out.println(e.toString());
+                } catch (Exception e) {
+                    System.out.println(e.toString());
                 }
-                //System.out.println("SERIES NUM: " + seriesNumber);
-                title = titleFull.substring(0, titleFull.indexOf(seriesNumberStr) - 1);
+
+
+                //System.out.println("\t\t" + seriesName + ":" + seriesNumber);
+
+
+                path = rootDir + "/" + author + "/" + seriesName + " - " + seriesNumber + "/" + title;
+            } else {
+                System.out.println("\t\tCan't parse this path");
+                return;
             }
 
-            //System.out.println("\t\t" + seriesName + ":" + seriesNumber);
-
-
-            path = rootDir + "/" + author + "/" + seriesName + " - " + seriesNumber + "/" + title;
-        } else {
-            System.out.println("\t\tCan't parse this path");
-            return;
-        }
-
-        //cover = fullPathString;
-        if (coverImage != null) {
-            cover = coverImage.toString();
-        }
-
-        try {
-            if (cover != null) {
-                FileInputStream input = new FileInputStream(new File(cover));
-                image = ArrayUtils.toObject(IOUtils.toByteArray(input));
+            //cover = fullPathString;
+            if (coverImage != null) {
+                cover = coverImage.toString();
             }
 
-            Book book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
+            try {
+                if (cover != null) {
+                    FileInputStream input = new FileInputStream(new File(cover));
+                    image = ArrayUtils.toObject(IOUtils.toByteArray(input));
+                }
 
-            // HACK
-            book.setBookType(Book.Type.audio);
+                Book book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
 
-            Book tmpBook = bookService.findByAuthorAndTitle(author,title);
-            if ( tmpBook != null ) {
-                System.out.println(String.format("BOOK %s %s is already in DB", title, author));
+                // HACK
+                book.setBookType(Book.Type.audio);
+
+                Book tmpBook = bookService.findByAuthorAndTitle(author, title);
+                if (tmpBook != null) {
+                    System.out.println(String.format("BOOK %s %s is already in DB", title, author));
+                } else {
+                    book = bookService.save(book);
+                    System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
+                }
+            } catch (final FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                //e.printStackTrace();
+                System.out.println(e);
+                //LOG.error(e.toString());
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            else {
-                book = bookService.save(book);
-                System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
-            }
-        } catch (final FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace();
-            System.out.println(e);
-            //LOG.error(e.toString());
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
@@ -208,8 +211,8 @@ public class Scanner {
         storageService.init();
 
         // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
-        final String rootDir = "/home/brian/Projects/testdir/audio books/";
-        //final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
+        //final String rootDir = "/home/brian/Projects/testdir/audio books/";
+        final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
         //final String rootDir = "/home/brian/Projects/testdir/test/";
         //final String rootDir = "/media/NAS/audiobooks/";
 /*
@@ -242,6 +245,10 @@ public class Scanner {
         }
 */
         System.out.println("ROOT DIR: " + rootDir);
+        // last modified, measured in milliseconds since the epoch
+        // long now = Instant.now().toEpochMilli();
+        Instant lastMod = Instant.now().minus(1L, ChronoUnit.MINUTES);
+        System.out.println("LAST MOD: " + lastMod.toEpochMilli() + " : " + lastMod);
 
         // walk through all dirs, handle valid books
         try {
@@ -252,9 +259,13 @@ public class Scanner {
                 // This will skip visiting a dir listed in the ignore list.
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    System.out.println(dir.toFile().toString());
+
                     if (ignoreList.contains(dir.getFileName().toString())) {
+                        System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
                         return SKIP_SUBTREE;
                     }
+
                     return CONTINUE;
                 }
 
@@ -262,11 +273,30 @@ public class Scanner {
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                     // create list of files in dir to process
                     // TODO: filter based on expected type (mp3, jpg, epub)
-                      try {
+
+                    //Date start = new Date();
+                    //attrs.creationTime().toInstant().isAfter(start.toInstant())
+                    /*
+                    // skip dirs whose mod date is < the last scan date
+                    // the dir mod date does NOT update if sub file has updated  TODO: check this for windows (all linux FS>)
+                    if ( dir.toFile().lastModified() < lastMod.toEpochMilli() ) {
+                        System.out.println("TOO OLD: " + dir.toFile().lastModified() + " : " + Instant.ofEpochMilli(dir.toFile().lastModified()));
+                        return CONTINUE; // don't skip subtree
+                    }
+                    */
+
+                    // scan this dir, add files that:
+                    // are not dirs
+                    try {
+                        Files.list(dir)
+                                .forEach(c -> System.out.println(c.toFile().lastModified()) );
+
                         List<Path> files = Files.list(dir)
                                 .filter(p -> !p.toFile().isDirectory())
                                 .collect(Collectors.toList());
 
+                        // do mod date check at dir level so all files get added
+                        //.filter(p -> p.toFile().lastModified() > lastMod.toEpochMilli())
                         if ( !files.isEmpty() ) {
                             parsePath(files, rootDir);
                         }

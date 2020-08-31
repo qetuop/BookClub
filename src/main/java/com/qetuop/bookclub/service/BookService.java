@@ -1,5 +1,6 @@
 package com.qetuop.bookclub.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class BookService implements IBookService{
 
     @Override
     public Book save(Book book) {
+        //book.setUpdated(Instant.now());
         book.setUpdated(LocalDateTime.now());
         return repository.save(book);
     }
