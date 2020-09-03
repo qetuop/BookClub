@@ -1,6 +1,9 @@
 package com.qetuop.bookclub;
 
 
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -9,17 +12,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
+//import com.google.common.io.Resources;
 
-
+import com.qetuop.bookclub.model.Config;
+import com.qetuop.bookclub.service.ConfigService;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 import java.util.function.Predicate;
@@ -35,25 +37,35 @@ import com.qetuop.bookclub.model.Book;
 
 import com.qetuop.bookclub.service.TagService;
 import com.qetuop.bookclub.model.Tag;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resources;
 
 import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 
+@Component
 public class Scanner {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final List<String> ignoreList = new ArrayList<>(Arrays.asList("@eaDir", "#recycle", "_temp", "_organize", "Warhammer", "_cleanup"));
 
     @Autowired
-    public StorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
-    public BookService bookService;
-    public TagService tagService;
+    private StorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
+    @Autowired
+    private BookService bookService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private ConfigService configService;
 
-    public Scanner(StorageService storageService, BookService bookService, TagService tagService) {
+/*    public Scanner(StorageService storageService, BookService bookService, TagService tagService) {
         this.storageService = storageService;
         this.bookService = bookService;
         this.tagService = tagService;
-    }
+        //this.configService = configService;
+    }*/
 
     private Path findLargestFile(List<Path> filePaths) {
         Path largestFile = null; // may be null
@@ -206,28 +218,33 @@ public class Scanner {
     }
 
     public void scan() {
+        System.out.println("Scanner:Scan()");
         // TODO: this is temporary
-        storageService.deleteAll();
-        storageService.init();
+        //storageService.deleteAll();
+        //storageService.init();
 
         // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
         //final String rootDir = "/home/brian/Projects/testdir/audio books/";
-        final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
+        //final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
         //final String rootDir = "/home/brian/Projects/testdir/test/";
         //final String rootDir = "/media/NAS/audiobooks/";
-/*
-        Configurations configs = new Configurations();
+
+      /*  Configurations configs = new Configurations();
         InputStream inputStream = null;
+        Properties prop = new Properties();
         try
         {
-            Properties prop = new Properties();
+
             inputStream = getClass().getClassLoader().getResourceAsStream("bookclub.properties");
             prop.load(inputStream);
 
             //Configuration config = configs.properties(new File("bookclub.properties"));
             // access configuration properties
             //rootDir = config.getString("rootDir");
-            rootDir = prop.getProperty("rootDir");
+            String tmprootDir = prop.getProperty("rootDir");
+            long lastScan = Long.parseLong(prop.getProperty("lastScan"));
+            System.out.println("TMP ROOT: " + tmprootDir);
+            System.out.println("Last scan: " + lastScan);
 
         }catch (FileNotFoundException ex) {
             System.err.println("Property file '"  + "' not found in the classpath");
@@ -242,13 +259,35 @@ public class Scanner {
                     ex.printStackTrace();
                 }
             }
-        }
-*/
+        }*/
+
+        Config config = configService.findById(1);
+        String rootDir = config.getAudioRootDir();
+
         System.out.println("ROOT DIR: " + rootDir);
         // last modified, measured in milliseconds since the epoch
         // long now = Instant.now().toEpochMilli();
         Instant lastMod = Instant.now().minus(1L, ChronoUnit.MINUTES);
-        System.out.println("LAST MOD: " + lastMod.toEpochMilli() + " : " + lastMod);
+        System.out.println(lastMod.toEpochMilli() + " : " + lastMod);
+
+
+
+/*
+        try  {
+            //URL resourceUrl = getClass().getResource("bookclub.properties");
+            URL resourceUrl = getClass().getResource("foo.properties");
+            System.out.println(resourceUrl.getPath());
+            //File file = new File(resourceUrl.toURI());
+            //OutputStream outputStream = new FileOutputStream(file);
+            final OutputStream outputStream = new FileOutputStream("foo.properties");
+
+            prop.setProperty("lastScan", Long.toString(lastMod.toEpochMilli()));
+            prop.store(outputStream, "");
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }*/
+
 
         // walk through all dirs, handle valid books
         try {
@@ -259,7 +298,7 @@ public class Scanner {
                 // This will skip visiting a dir listed in the ignore list.
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    System.out.println(dir.toFile().toString());
+                    System.out.println(dir.toFile().lastModified() + " : " + dir.toFile().toString() );
 
                     if (ignoreList.contains(dir.getFileName().toString())) {
                         System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
@@ -277,6 +316,11 @@ public class Scanner {
                     //Date start = new Date();
                     //attrs.creationTime().toInstant().isAfter(start.toInstant())
                     /*
+                    The mtime (modification time) on the directory itself changes when a file or a subdirectory is added, removed or renamed.
+
+                    Modifying the contents of a file within the directory does not change the directory itself, nor does updating the modified
+                    times of a file or a subdirectory. If you change the permissions on the directory, the ctime changes but the mtime does not.
+
                     // skip dirs whose mod date is < the last scan date
                     // the dir mod date does NOT update if sub file has updated  TODO: check this for windows (all linux FS>)
                     if ( dir.toFile().lastModified() < lastMod.toEpochMilli() ) {
@@ -288,8 +332,7 @@ public class Scanner {
                     // scan this dir, add files that:
                     // are not dirs
                     try {
-                        Files.list(dir)
-                                .forEach(c -> System.out.println(c.toFile().lastModified()) );
+                        //Files.list(dir).forEach(c -> System.out.println(c.toFile().lastModified()) );
 
                         List<Path> files = Files.list(dir)
                                 .filter(p -> !p.toFile().isDirectory())

@@ -6,6 +6,7 @@ import com.qetuop.bookclub.BackRestore;
 import com.qetuop.bookclub.model.Tag;
 import com.qetuop.bookclub.repository.BookRepository;
 
+import com.qetuop.bookclub.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,30 +40,33 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.qetuop.bookclub.service.StorageFileNotFoundException;
-import com.qetuop.bookclub.service.StorageService;
-import com.qetuop.bookclub.service.BookService;
-import com.qetuop.bookclub.service.TagService;
-
 @Controller
 public class BookController {
 
-    private final StorageService storageService;
-    private final BookService bookService;
-    private final TagService tagService;
+    @Autowired
+    private StorageService storageService;
+    @Autowired
+    private BookService bookService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private ConfigService configService;
+    @Autowired
+    private Scanner scanner;
 
     // TODO: don't access repository directly but use service?
     //private final BookRepository bookRepository;
 
     private BackRestore backRestore;
 
-    @Autowired
-    public BookController(StorageService storageService, BookService bookService,TagService tagService) {
+  /*  @Autowired
+    public BookController(StorageService storageService, BookService bookService,TagService tagService, ConfigService configService) {
         this.storageService = storageService;
         this.bookService = bookService;
         //this.bookRepository = bookRepository;
         this.tagService = tagService;
-    }
+        this.configService = configService;
+    }*/
 
     @GetMapping("/")
     public String listUploadedFiles(Model model) throws IOException {
@@ -141,7 +145,8 @@ public class BookController {
     @PostMapping("/scan")
     public String scan() {
         System.out.println("HERE:POST scan/ ");
-        Scanner scanner = new Scanner(storageService, bookService, tagService);
+        //Scanner scanner = new Scanner(storageService, bookService, tagService);
+        //Scanner scanner = new Scanner();
         scanner.scan();
         return "redirect:/";
     }

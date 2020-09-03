@@ -2,7 +2,8 @@ package com.qetuop.bookclub;
 
 import java.lang.invoke.MethodHandles;
 
-import com.qetuop.bookclub.service.BookService;
+import com.qetuop.bookclub.model.Config;
+import com.qetuop.bookclub.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -12,9 +13,7 @@ import org.springframework.stereotype.Component;
 //import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.qetuop.bookclub.service.StorageService;
 import com.qetuop.bookclub.service.BookService;
-import com.qetuop.bookclub.service.TagService;
 
 @Component
 public class AppStartupRunner implements ApplicationRunner {
@@ -22,21 +21,46 @@ public class AppStartupRunner implements ApplicationRunner {
 	public static int counter;
 
 	@Autowired
-	public StorageService storageService;
-	public BookService bookService;
-	public TagService tagService;
+	private StorageService storageService;
+	@Autowired
+	private BookService bookService;
+	@Autowired
+	private TagService tagService;
+	@Autowired
+	private ConfigService configService;
+	@Autowired
+	private Scanner scanner;
 
-	public AppStartupRunner(StorageService storageService, BookService bookService, TagService tagService) {
+	/*public AppStartupRunner(StorageService storageService, BookService bookService, TagService tagService, ConfigService configService) {
 		this.storageService = storageService;
 		this.bookService = bookService;
 		this.tagService = tagService;
-	}
+		this.configService = configService;
+	}*/
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		LOG.info("AppStartupRunner::run");
 
-		Scanner scanner = new Scanner(storageService, bookService, tagService);
+		Config config = new Config();
+
+		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
+		//final String rootDir = "/home/brian/Projects/testdir/audio books/";
+		//final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
+		//final String rootDir = "/home/brian/Projects/testdir/test/";
+		//final String rootDir = "/media/NAS/audiobooks/";
+
+		config.setAudioRootDir("/home/brian/Projects/testdir/audio books/");
+		config.setAudioRootDir("/home/brian/Projects/testdir/fake_audio_books/");
+		configService.save(config);
+
+		// TODO: add a function to return the one AND only entry - or just create get/set functions in service class
+		config = configService.findById(1);
+		String rootDir = config.getAudioRootDir();
+		System.out.println("ROOT DIR: " + rootDir);
+
+		//Scanner scanner = new Scanner(storageService, bookService, tagService);
+		//Scanner scanner = new Scanner();
 		scanner.scan();
 /*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent

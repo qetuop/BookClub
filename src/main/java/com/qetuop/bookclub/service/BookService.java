@@ -27,8 +27,8 @@ public class BookService implements IBookService{
 
     @Override
     public Book save(Book book) {
-        //book.setUpdated(Instant.now());
-        book.setUpdated(LocalDateTime.now());
+        book.setUpdated(Instant.now());
+        //book.setUpdated(LocalDateTime.now());
         return repository.save(book);
     }
 
