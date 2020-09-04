@@ -31,6 +31,9 @@ public class AppStartupRunner implements ApplicationRunner {
 	@Autowired
 	private Scanner scanner;
 
+	//@Autowired
+	//ApplicationConfiguration ac;
+
 	/*public AppStartupRunner(StorageService storageService, BookService bookService, TagService tagService, ConfigService configService) {
 		this.storageService = storageService;
 		this.bookService = bookService;
@@ -45,13 +48,12 @@ public class AppStartupRunner implements ApplicationRunner {
 		Config config = new Config();
 
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
-		//final String rootDir = "/home/brian/Projects/testdir/audio books/";
-		//final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
-		//final String rootDir = "/home/brian/Projects/testdir/test/";
-		//final String rootDir = "/media/NAS/audiobooks/";
+		String rootDir = "/home/brian/Projects/testdir/audio books/";
+		//rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
+		//rootDir = "/home/brian/Projects/testdir/test/";
+		//rootDir = "/media/NAS/audiobooks/";
 
-		config.setAudioRootDir("/home/brian/Projects/testdir/audio books/");
-		config.setAudioRootDir("/home/brian/Projects/testdir/fake_audio_books/");
+		config.setAudioRootDir(rootDir);
 		configService.save(config);
 
 		// TODO: add a function to return the one AND only entry - or just create get/set functions in service class
@@ -61,7 +63,7 @@ public class AppStartupRunner implements ApplicationRunner {
 
 		//Scanner scanner = new Scanner(storageService, bookService, tagService);
 		//Scanner scanner = new Scanner();
-		scanner.scan();
+		scanner.scan(false);
 /*
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
 		String rootDir = "/home/brian/Projects/testdir/audio books/";       

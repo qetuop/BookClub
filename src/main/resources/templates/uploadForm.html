@@ -9,7 +9,12 @@
 
 <div>
 	<form method="POST" action="/scan">
-		<p><input type="submit" value="Scan" /></p>
+		<p>Scan: <input type="submit" name="Scan" value=false /></p>
+	</form>
+</div>
+<div>
+	<form method="POST" action="/scan" >
+		<p>Force Scan: <input type="submit" name="Scan" value=true /></p>
 	</form>
 </div>
 

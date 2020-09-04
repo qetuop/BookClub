@@ -143,11 +143,9 @@ public class BookController {
     }
 
     @PostMapping("/scan")
-    public String scan() {
-        System.out.println("HERE:POST scan/ ");
-        //Scanner scanner = new Scanner(storageService, bookService, tagService);
-        //Scanner scanner = new Scanner();
-        scanner.scan();
+    public String scan(@RequestParam("Scan") boolean Scan) {
+        System.out.println("HERE:POST scan/ " + Scan);
+        scanner.scan(Scan);
         return "redirect:/";
     }
 

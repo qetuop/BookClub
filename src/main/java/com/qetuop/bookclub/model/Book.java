@@ -42,7 +42,7 @@ public class Book {
     private String seriesName;
     private Float seriesNumber;
     private Boolean read;
-    private Instant updated;  // time this book, TODO: split into creationTime and modificationTime?  use ZonedDateTime?
+    private Long updated;  // time this book, TODO: split into creationTime and modificationTime?  use ZonedDateTime?
     private Type bookType;
 
     @Lob

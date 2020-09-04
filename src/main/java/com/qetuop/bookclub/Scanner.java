@@ -217,8 +217,8 @@ public class Scanner {
         }
     }
 
-    public void scan() {
-        System.out.println("Scanner:Scan()");
+    public void scan(boolean forceScan) {
+        System.out.println("Scanner:Scan() " + forceScan);
         // TODO: this is temporary
         //storageService.deleteAll();
         //storageService.init();
@@ -272,6 +272,7 @@ public class Scanner {
 
 
 
+
 /*
         try  {
             //URL resourceUrl = getClass().getResource("bookclub.properties");
@@ -289,7 +290,7 @@ public class Scanner {
         }*/
 
 
-        // walk through all dirs, handle valid books
+        // walk through all dirs/files, handle valid books
         try {
             Files.walkFileTree(Paths.get(rootDir), EnumSet.of(FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
 
@@ -304,7 +305,6 @@ public class Scanner {
                         System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
                         return SKIP_SUBTREE;
                     }
-
                     return CONTINUE;
                 }
 
@@ -315,19 +315,22 @@ public class Scanner {
 
                     //Date start = new Date();
                     //attrs.creationTime().toInstant().isAfter(start.toInstant())
-                    /*
-                    The mtime (modification time) on the directory itself changes when a file or a subdirectory is added, removed or renamed.
 
-                    Modifying the contents of a file within the directory does not change the directory itself, nor does updating the modified
-                    times of a file or a subdirectory. If you change the permissions on the directory, the ctime changes but the mtime does not.
+                    //The mtime (modification time) on the directory itself changes when a file or a subdirectory is added, removed or renamed.
 
-                    // skip dirs whose mod date is < the last scan date
+                    //Modifying the contents of a file within the directory does not change the directory itself, nor does updating the modified
+                    //times of a file or a subdirectory. If you change the permissions on the directory, the ctime changes but the mtime does not.
+
+                    // skip *files* whose mod date is < the last scan date
                     // the dir mod date does NOT update if sub file has updated  TODO: check this for windows (all linux FS>)
-                    if ( dir.toFile().lastModified() < lastMod.toEpochMilli() ) {
-                        System.out.println("TOO OLD: " + dir.toFile().lastModified() + " : " + Instant.ofEpochMilli(dir.toFile().lastModified()));
-                        return CONTINUE; // don't skip subtree
+
+                    if ( !forceScan ) {
+                        if (dir.toFile().lastModified() < lastMod.toEpochMilli()) {
+                            System.out.println("TOO OLD: " + dir.toFile().lastModified() + " : " + Instant.ofEpochMilli(dir.toFile().lastModified()));
+                            return CONTINUE; // don't skip subtree
+                        }
                     }
-                    */
+
 
                     // scan this dir, add files that:
                     // are not dirs
@@ -353,6 +356,9 @@ public class Scanner {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        config.setLastScanTime(lastMod.toEpochMilli());
+        configService.save(config);
 
 
         /*// TAG TEST
