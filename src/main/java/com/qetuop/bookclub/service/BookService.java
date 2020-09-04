@@ -20,52 +20,45 @@ import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.repository.BookRepository;
 
 @Service
-public class BookService implements IBookService{
+public class BookService {
 
     @Autowired
     public BookRepository repository;
 
-    @Override
     public Book save(Book book) {
         book.setUpdated(Instant.now().toEpochMilli());
         //book.setUpdated(LocalDateTime.now());
         return repository.save(book);
     }
 
-    @Override
     public List<Book> findAll() {
         List<Book> books = (List<Book>) repository.findAll();
         return books;
     } 
 
-    @Override
     public Book findById(long id) {
         Optional<Book> book = repository.findById(id);
         return book.get();
     }
 
-    @Override
     public List<Book> findByAuthor(String author) {
         System.out.println("BookService:findByAuthor: " + author);
         List<Book> books = (List<Book>) repository.findByAuthor(author);
         return books;
     }
 
-    @Override
     public List<Book> findBySeriesName(String seriesName) {
         System.out.println("BookService:findBySeries: " + seriesName);
         List<Book> books = (List<Book>) repository.findBySeriesName(seriesName);
         return books;
     }
 
-    @Override
     public Book findByAuthorAndTitle(String author, String title) {
         System.out.println("BookService:findByAuthorAndTitle: " + author +":"+ title);
         Book book = repository.findByAuthorAndTitle(author,title);
         return book;
     }
 
-    @Override
     public List<Book> retrieveByTag(String tag) {
         System.out.println("retrieveByTag: " + tag);
         List<Book> books = (List<Book>) repository.retrieveByTag(tag);
@@ -90,7 +83,6 @@ public class BookService implements IBookService{
     }
 */
 
-    @Override
     @Transactional
     public void saveImageFile(long id, MultipartFile file) {
         System.out.println("HERE:saveImageFile");
@@ -120,7 +112,6 @@ public class BookService implements IBookService{
         repository.save(book);
     }
 
-    @Override
     public void addTag(Long id, Tag tag) {
         Book book = repository.findById(id).get();
 
@@ -133,7 +124,6 @@ public class BookService implements IBookService{
         repository.save(book);
     }
 
-    @Override
     public void delTag(Long id, Tag tag) {
         Book book = repository.findById(id).get();
 

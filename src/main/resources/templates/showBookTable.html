@@ -54,8 +54,8 @@
 
                 <td th:text="${#strings.setJoin(book.getTags().![value], ',')}" />
 
-                <!--<td th:text="${#dates.format(book.updated, 'dd-MMM-yyyy')}"></td>-->
-                <td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}">Updated</td>
+                <td th:text="${#dates.format(book.updated, 'MM-dd-yyyy')}"></td>
+                <!--<td th:text="${#temporals.format(book.updated, 'MM-dd-yyyy')}">Updated</td>-->
 
                 <td th:text="${book.bookType}">Type</td>
 

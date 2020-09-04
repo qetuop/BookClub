@@ -10,23 +10,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ConfigService implements IConfigService {
+public class ConfigService {
 
     @Autowired
     public ConfigRepository repository;
 
-    @Override
     public Config save(Config config) {
         return repository.save(config);
     }
 
-    @Override
     public List<Config> findAll() {
         List<Config> rv = (List<Config>) repository.findAll();
         return rv;
     }
 
-    @Override
     public Config findById(long id) {
         Optional<Config> rv = repository.findById(id);
         return rv.get();
