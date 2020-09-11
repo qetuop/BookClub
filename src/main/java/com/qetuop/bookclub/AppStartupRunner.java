@@ -53,11 +53,13 @@ public class AppStartupRunner implements ApplicationRunner {
 		//rootDir = "/home/brian/Projects/testdir/test/";
 		//rootDir = "/media/NAS/audiobooks/";
 
-		// TODO: add other mock data - ignore dir, last mode, etc.
+		// TODO: add other mock data - ignore dir, last mode, etc. - need to persist this through  restarts...
+		config.setLastScanTime(0l);
+
 
 		config.setAudioRootDir(rootDir);
 		configService.save(config);
 
-		scanner.scan(false);
+		scanner.scan(true);
 	}
 }

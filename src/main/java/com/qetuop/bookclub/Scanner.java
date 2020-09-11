@@ -8,6 +8,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -171,16 +173,12 @@ public class Scanner {
                 } catch (Exception e) {
                     System.out.println(e.toString());
                 }
-
-
-                //System.out.println("\t\t" + seriesName + ":" + seriesNumber);
-
-
                 path = rootDir + "/" + author + "/" + seriesName + " - " + seriesNumber + "/" + title;
             } else {
                 System.out.println("\t\tCan't parse this path");
                 return;
             }
+        } // series
 
             //cover = fullPathString;
             if (coverImage != null) {
@@ -214,8 +212,8 @@ public class Scanner {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
-    }
+
+    } // parsePath
 
     public void scan(boolean forceScan) {
         System.out.println("Scanner:Scan() " + forceScan);
@@ -223,72 +221,12 @@ public class Scanner {
         //storageService.deleteAll();
         //storageService.init();
 
-        // TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
-        //final String rootDir = "/home/brian/Projects/testdir/audio books/";
-        //final String rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
-        //final String rootDir = "/home/brian/Projects/testdir/test/";
-        //final String rootDir = "/media/NAS/audiobooks/";
-
-      /*  Configurations configs = new Configurations();
-        InputStream inputStream = null;
-        Properties prop = new Properties();
-        try
-        {
-
-            inputStream = getClass().getClassLoader().getResourceAsStream("bookclub.properties");
-            prop.load(inputStream);
-
-            //Configuration config = configs.properties(new File("bookclub.properties"));
-            // access configuration properties
-            //rootDir = config.getString("rootDir");
-            String tmprootDir = prop.getProperty("rootDir");
-            long lastScan = Long.parseLong(prop.getProperty("lastScan"));
-            System.out.println("TMP ROOT: " + tmprootDir);
-            System.out.println("Last scan: " + lastScan);
-
-        }catch (FileNotFoundException ex) {
-            System.err.println("Property file '"  + "' not found in the classpath");
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }*/
-
         Config config = configService.findById(1);
         String rootDir = config.getAudioRootDir();
+        Long lastScan = config.getLastScanTime();
 
         System.out.println("ROOT DIR: " + rootDir);
-        // last modified, measured in milliseconds since the epoch
-        // long now = Instant.now().toEpochMilli();
-        Instant lastMod = Instant.now().minus(1L, ChronoUnit.MINUTES);
-        System.out.println(lastMod.toEpochMilli() + " : " + lastMod);
-
-
-
-
-/*
-        try  {
-            //URL resourceUrl = getClass().getResource("bookclub.properties");
-            URL resourceUrl = getClass().getResource("foo.properties");
-            System.out.println(resourceUrl.getPath());
-            //File file = new File(resourceUrl.toURI());
-            //OutputStream outputStream = new FileOutputStream(file);
-            final OutputStream outputStream = new FileOutputStream("foo.properties");
-
-            prop.setProperty("lastScan", Long.toString(lastMod.toEpochMilli()));
-            prop.store(outputStream, "");
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }*/
-
+        System.out.println(lastScan + " : " + LocalDateTime.ofInstant(Instant.ofEpochMilli(lastScan), ZoneId.systemDefault()));
 
         // walk through all dirs/files, handle valid books
         try {
@@ -303,6 +241,11 @@ public class Scanner {
 
                     if (ignoreList.contains(dir.getFileName().toString())) {
                         System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
+                        return SKIP_SUBTREE;
+                    }
+
+                    if ( dir.getFileName().toString().startsWith("_") ) {
+                        System.out.println(String.format("Dir %s has an ignore pattern", dir.getFileName()));
                         return SKIP_SUBTREE;
                     }
                     return CONTINUE;
@@ -325,7 +268,7 @@ public class Scanner {
                     // the dir mod date does NOT update if sub file has updated  TODO: check this for windows (all linux FS>)
 
                     if ( !forceScan ) {
-                        if (dir.toFile().lastModified() < lastMod.toEpochMilli()) {
+                        if (dir.toFile().lastModified() < lastScan) {
                             System.out.println("TOO OLD: " + dir.toFile().lastModified() + " : " + Instant.ofEpochMilli(dir.toFile().lastModified()));
                             return CONTINUE; // don't skip subtree
                         }
@@ -357,7 +300,7 @@ public class Scanner {
             e.printStackTrace();
         }
 
-        config.setLastScanTime(lastMod.toEpochMilli());
+        config.setLastScanTime(Instant.now().toEpochMilli());
         configService.save(config);
 
 
