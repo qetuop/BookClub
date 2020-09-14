@@ -18,8 +18,7 @@
     <div class="grid">
         <tr th:each="book : ${books}">
             <div class="container">
-                <img class="card-img" th:src="@{/books/{id}/cover(id=${book.id})}" title="MOUSE OVER TxT" alt=COVER
-                     onerror="this.onerror=null; this.src='/images/noimage.png'" >
+                <img class="card-img" th:src="@{/books/{id}/cover(id=${book.id})}" title="MOUSE OVER TxT" alt=COVER onerror="this.onerror=null; this.src='/images/noimage.png'">
 
 
                 <button class="watched" th:onclick="toggleRead([[${book.id}]])">
@@ -48,9 +47,7 @@
                 <div th:if="${book.seriesName} != ''">
                     <a th:href="@{/showBooks/series/{seriesName}(seriesName=${book.seriesName})}">
                         <th:block th:with="result=${book.seriesNumber}  % 1 == 0 ? ${#numbers.formatDecimal(book.seriesNumber, 0, 0)} : ${book.seriesNumber}">
-                            <p class="card-info" th:text="${book.seriesName} + ' ('
-                            + ${result}
-                            + ')'">SERIES</p>
+                            <span th:data-content-start="${book.seriesName}" th:data-content-end="'('+${result}+')'"></span>
                         </th:block>
                     </a>
                 </div>

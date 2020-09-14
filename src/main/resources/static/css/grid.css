@@ -18,12 +18,14 @@ body {
     max-width: 400px;
 }
 
+
 /*
 .card-img {
     width: 100px;
     height: 150px;
 }
 */
+
 .card-info {
     margin-top: 0em;
     margin-bottom: 0em;
@@ -34,36 +36,77 @@ body {
     font-size: 10px;
 }
 
+
 /* how to display the cover image in non-hover state */
-  .card-img  {
+
+.card-img {
     opacity: 1;
     width: 100%;
     height: auto;
     transition: 0.5s ease;
-  }
+}
 
-  /* how to display the watched icon in non-hover state */
-  .watched {
+
+/* how to display the watched icon in non-hover state */
+
+.watched {
     transition: 0.5s ease;
     opacity: 0.2;
     position: absolute;
     top: 0%;
     left: 0%;
-    background-color: rgba(0,0,0,.45);
+    background-color: rgba(0, 0, 0, .45);
     border-width: 0px;
     padding: 0px;
-  }
+}
 
-   /* gray out the cover image slightly when moused over */
-  .container:hover .card-img {
+
+/* gray out the cover image slightly when moused over */
+
+.container:hover .card-img {
     opacity: 0.3;
-  }
+}
 
-  /* how to display the watched icon in hover state - change only the listed attributes? */
-  .container:hover .watched {
+
+/* how to display the watched icon in hover state - change only the listed attributes? */
+
+.container:hover .watched {
     opacity: 1;
-  }
+}
+
 
 /* keep links same color after visiting */
-a { text-decoration: none; color:blue; }
-a:visited { text-decoration: none; }
+
+a {
+    text-decoration: none;
+    color: blue;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+
+/* Shorten series name/number.  Put ellipsis in middle of string */
+
+span::before,
+span::after {
+    display: inline-block;
+    max-width: 85%;
+    overflow: hidden;
+    white-space: pre;
+    font-size: 10px;
+    margin-top: 0em;
+    margin-bottom: 0em;
+}
+
+span::before {
+    content: attr(data-content-start);
+    text-overflow: ellipsis;
+}
+
+span::after {
+    content: attr(data-content-end);
+    text-overflow: '';
+    direction: rtl;
+}
