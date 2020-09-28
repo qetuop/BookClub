@@ -84,7 +84,7 @@ public class BookController {
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 
-        System.out.println("HERE:Post/ ");
+        System.out.println("handleFileUpload: " + file.getName() + " " + file.getOriginalFilename());
 
         storageService.store(file);
         //storageService.storeDB(file);

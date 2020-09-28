@@ -59,6 +59,8 @@ myREADME
 testdir/*
 upload-dir/*
 .~*
+docker/*
+Dockerfile
 
 src/main/resources/static/images/empty_bookcase.jpg
 src/main/resources/static/images/empty_bookcase_2.jpg

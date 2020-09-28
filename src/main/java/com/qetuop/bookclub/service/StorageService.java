@@ -24,11 +24,16 @@ public class StorageService {
 
 	@Autowired
 	public StorageService(StorageProperties properties) {
+
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 
 	public void store(MultipartFile file) {
+
 		String filename = StringUtils.cleanPath(file.getOriginalFilename());
+
+		System.out.println("StorageService::store(): " + this.rootLocation + " | " + this.rootLocation.resolve(filename));
+
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file " + filename);
