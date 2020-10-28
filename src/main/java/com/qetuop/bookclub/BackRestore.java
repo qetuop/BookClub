@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.qetuop.bookclub.model.Book;
 import com.qetuop.bookclub.model.Tag;
 import com.qetuop.bookclub.service.BookService;
+import com.qetuop.bookclub.service.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,14 @@ public class BackRestore {
 
     @Autowired
     private final BookService bookService;
+    private final TagService tagService;
 
 
 
-    public BackRestore(BookService bookService) {
+    public BackRestore(BookService bookService, TagService tagService) {
+
         this.bookService = bookService;
+        this.tagService = tagService;
     }
 
     public void backup() {
@@ -104,6 +108,7 @@ public class BackRestore {
 
         try {
             //Reader reader = Files.newBufferedReader(Paths.get(ClassLoader.getSystemResource(filename).toURI()));
+            System.out.println("Restoring: " + Paths.get(filename));
             Reader reader = Files.newBufferedReader(Paths.get(filename));
 
             List<String[]> list = new ArrayList<>();
@@ -124,15 +129,26 @@ public class BackRestore {
                 Boolean read  = Boolean.valueOf(line[4]);
 
                 //String[] tagArr = line[5].split(",");
+                // an empty string will return an array of 1 empty object TODO: how to handle as I encouter this in other places
                 ArrayList<String> tagList = new ArrayList<String>(Arrays.asList(line[5].split(",")));
+                System.out.println("TAGLIST: " + tagList.size() + "**" +  tagList.get(0) +"**");
 
                 Book book = bookService.findByAuthorAndTitle(author,title);
+                System.out.println("BackRestore:restore:book is null?: " + (book == null));
                 if ( book != null ) {
-                    System.out.println("FOUND BOOK: " + book.getAuthor());
+                    System.out.println("BackRestore:restore:FOUND BOOK: " + book.getAuthor());
                     book.setRead(read);
                     if ( !tagList.isEmpty() ) {
-                        for (String tag : tagList) {
-                            book.addTag(new Tag(tag));
+                        for (String tagStr : tagList) {
+                            if ( !tagStr.isEmpty() ) {
+                                System.out.println("BackRestore:restore:add tag: " + tagStr);
+                                Tag tag = tagService.findByValue(tagStr);
+                                if ( tag == null) {
+                                    tag = new Tag(tagStr);
+                                }
+                                //book.addTag(new Tag(tagStr)); // TODO: check if tag exists in DB?  crashes, unique constraint
+                                bookService.addTag(book.getId(), tag);
+                            }
                         }
                     }
 

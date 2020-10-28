@@ -127,7 +127,7 @@ public class Scanner {
 
         author = splitList[0];
 
-        //System.out.println("AUTHOR: " + author + "," + splitList[1]);
+        System.out.println("AUTHOR: " + author);
 
         // HACK check - ignore these dirs TODO: fix this
         if (ignoreList.contains(author)) {
@@ -201,7 +201,7 @@ public class Scanner {
                     System.out.println(String.format("BOOK %s %s is already in DB", title, author));
                 } else {
                     book = bookService.save(book);
-                    System.out.println("\t\tNew book: " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
+                    System.out.println("\t\tNew book: " + book.getAuthor() + ", " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
                 }
             } catch (final FileNotFoundException e) {
                 // TODO Auto-generated catch block

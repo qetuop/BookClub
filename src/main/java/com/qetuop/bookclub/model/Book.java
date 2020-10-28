@@ -59,8 +59,7 @@ public class Book {
     @JoinTable(
             name = "Book_Tag",
             joinColumns = { @JoinColumn(name = "book_id") },
-            inverseJoinColumns = { @JoinColumn(name = "tag_id") },
-            uniqueConstraints = @UniqueConstraint(columnNames = {"book_id", "tag_id"})
+            inverseJoinColumns = { @JoinColumn(name = "tag_id") }
     )
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

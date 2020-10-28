@@ -152,7 +152,7 @@ public class BookController {
     @PostMapping("/backup")
     public String backup() {
         System.out.println("HERE:POST backup/ ");
-        BackRestore backRestore = new BackRestore(bookService);
+        BackRestore backRestore = new BackRestore(bookService, tagService);
         backRestore.backup();
         return "redirect:/";
     }
@@ -160,7 +160,7 @@ public class BookController {
     @PostMapping("/restore")
     public String restore() {
         System.out.println("HERE:POST restore/ ");
-        BackRestore backRestore = new BackRestore(bookService);
+        BackRestore backRestore = new BackRestore(bookService, tagService);
         backRestore.restore();
         return "redirect:/";
     }

@@ -51,6 +51,7 @@ public class AppStartupRunner implements ApplicationRunner {
 		String rootDir = "/home/brian/Projects/testdir/audio books/";
 		//rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
 		//rootDir = "/home/brian/Projects/testdir/test/";
+		rootDir = "/home/brian/Projects/testdir/simple/";
 		//rootDir = "/media/NAS/audiobooks/";
 
 		// TODO: add other mock data - ignore dir, last mode, etc. - need to persist this through  restarts...

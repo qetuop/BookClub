@@ -14,6 +14,8 @@ import lombok.Data;  //add @Data before class to get auto generated getter, sett
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,4 +41,25 @@ public class Tag {
     public Tag(String value) {
         this.value = value;
     }
+
+   /* @Override
+    public int hashCode() {
+        HashCodeBuilder hcb = new HashCodeBuilder();
+        hcb.append(value);
+        return hcb.toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Tag)) {
+            return false;
+        }
+        Tag that = (Tag) obj;
+        EqualsBuilder eb = new EqualsBuilder();
+        eb.append(value, that.value);
+        return eb.isEquals();
+    }*/
 }
