@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.io.IOException;
 
 import com.qetuop.bookclub.model.Tag;
+import com.qetuop.bookclub.repository.TagRepository;
+import com.qetuop.bookclub.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +26,8 @@ public class BookService {
 
     @Autowired
     public BookRepository repository;
+    @Autowired
+    public TagService tagService;
 
     public Book save(Book book) {
         book.setUpdated(Instant.now().toEpochMilli());
@@ -112,6 +116,51 @@ public class BookService {
         repository.save(book);
     }
 
+    public void addTagList(Long id, List<String> addTagList) {
+        System.out.println("addTagList: " + addTagList.size());
+        for (String tagString : addTagList) {
+            System.out.println("addTagList: " + id + ":" + tagString);
+            if (!tagString.isEmpty()) {
+                this.addTag(id, tagString);
+                System.out.println("ADDED!");
+            }
+        }
+    }
+
+    public void delTagList(Long id, List<String> delTagList) {
+        for (String tagString : delTagList) {
+            if (!tagString.isEmpty()) {
+                this.delTag(id, tagString);
+            }
+        }
+    }
+
+    public void addTag(Long id, String strTag) {
+        Book book = repository.findById(id).get();
+
+        // use existing tag if exists
+        System.out.println("BookService::addTag:"+(tagService==null));
+        Tag tag = tagService.findByValue(strTag);
+        if ( tag == null) {
+            tag = new Tag(strTag);
+        }
+
+        book.addTag(tag);
+        repository.save(book);
+    }
+
+    public void delTag(Long id, String strTag) {
+        Book book = repository.findById(id).get();
+
+        // Dont try and remove non-existent tags?
+        Tag tag = tagService.findByValue(strTag);
+        if ( tag != null) {
+            book.removeTag(tag);
+            repository.save(book);
+        }
+    }
+
+    /*  TODO: do i need these?
     public void addTag(Long id, Tag tag) {
         Book book = repository.findById(id).get();
 
@@ -135,4 +184,5 @@ public class BookService {
         book.removeTag(tag);
         repository.save(book);
     }
+    */
 }

@@ -97,7 +97,7 @@ public class BookController {
 
     @GetMapping(path = "/books/{id}/cover")
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
-        Book book = bookService.findById(Long.valueOf(id));
+        Book book = bookService.findById(Long.parseLong(id));
 
         //System.out.println("COVER ID:"+book.getSeriesName());
 
@@ -243,15 +243,13 @@ public class BookController {
     @PostMapping("/updateBooks")
     //@RequestMapping(value = "/updateBooks", headers = "Accept=application/json", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     public String updateBooks(@RequestBody Map<String, Object> body) {
-        System.out.println("HERE:POST updateBooks/:");
+        System.out.println("BookController::updateBooks()");
 
         ArrayList<String> ids = (ArrayList<String>) body.get("ids");
-        System.out.println("ids:" + ids.size());
+        System.out.println("id size:" + ids.size());
 
-        Boolean read = (Boolean) body.get("read"); // may be null = do nothing
+        Boolean read = (Boolean) body.get("read"); // may be null = do nothing (N/A), true or false
         System.out.println("read: " + read);
-
-
 
         for (String id : (List<String>) ids) {
             System.out.println("ID: " + id);
@@ -263,36 +261,14 @@ public class BookController {
 
             // add all tags
             String addTagString = (String) body.get("addTags");
-            System.out.println("addTags:*" + addTagString + "*");
             List<String> addTagList = Arrays.asList(addTagString.split(",")); // empty string returns an array with an empty string!
-            for (String tagString : addTagList) {
-                if ( !tagString.isEmpty() ) {
-                    System.out.println("Add tag:*" + tagString + "*");
-                    Tag tag = tagService.findByValue(tagString);
-                    if ( tag == null ) {
-                        tag = new Tag(tagString);
-                    }
-                    bookService.addTag(Long.valueOf(id), tag);
-                }
-            } // for each tag
+            bookService.addTagList(Long.valueOf(id),addTagList);
 
             // remove all tags
             String delTagString = (String) body.get("delTags");
-            System.out.println("delTags:" + delTagString);
+             // TODO: what is this split doing?!?
             List<String> delTagList = Arrays.asList(delTagString.split("\\s*,\\s*"));
-            for (String tagString : delTagList) {
-                if ( !tagString.isEmpty() ) {
-                    System.out.println("Del tag::*" + tagString + "*");
-                    //TODO: can i just create a Tag object and search the books.tags?
-                    Tag tag = tagService.findByValue(tagString);
-                    if ( tag != null ) {
-                        bookService.delTag(Long.valueOf(id), tag);
-                    }
-                    else {
-                        System.out.println("SHOULD NOT BE HERE, how did the tag get created:*" + tagString +"*");
-                    }
-                }
-            } // for each tag
+            bookService.delTagList(Long.valueOf(id),delTagList);
 
         } // for each book
 

@@ -66,4 +66,6 @@ src/main/resources/static/images/empty_bookcase.jpg
 src/main/resources/static/images/empty_bookcase_2.jpg
 src/main/resources/templates/empty_bookcase_2.jpg
     
-
+run.sh
+docker-compose.yml
+wait-for-it.sh

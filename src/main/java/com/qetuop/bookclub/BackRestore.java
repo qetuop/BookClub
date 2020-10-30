@@ -24,10 +24,11 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class BackRestore {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final String filename = "book_club_backup.csv";
+    private static final String filename = "book_club_backup.csv";  // TODO: this will need to be a config item
 
     @Autowired
     private final BookService bookService;
+    @Autowired
     private final TagService tagService;
 
 
@@ -119,42 +120,19 @@ public class BackRestore {
             csvReader.readNext();
 
             while ((line = csvReader.readNext()) != null) {
-                //list.add(line);
-                System.out.println(line);
-                for (String token : line ) {
-                    System.out.println(token);
-                }
                 String author = line[0];
                 String title  = line[1];
                 Boolean read  = Boolean.valueOf(line[4]);
-
-                //String[] tagArr = line[5].split(",");
                 // an empty string will return an array of 1 empty object TODO: how to handle as I encouter this in other places
                 ArrayList<String> tagList = new ArrayList<String>(Arrays.asList(line[5].split(",")));
-                System.out.println("TAGLIST: " + tagList.size() + "**" +  tagList.get(0) +"**");
 
                 Book book = bookService.findByAuthorAndTitle(author,title);
-                System.out.println("BackRestore:restore:book is null?: " + (book == null));
                 if ( book != null ) {
-                    System.out.println("BackRestore:restore:FOUND BOOK: " + book.getAuthor());
                     book.setRead(read);
-                    if ( !tagList.isEmpty() ) {
-                        for (String tagStr : tagList) {
-                            if ( !tagStr.isEmpty() ) {
-                                System.out.println("BackRestore:restore:add tag: " + tagStr);
-                                Tag tag = tagService.findByValue(tagStr);
-                                if ( tag == null) {
-                                    tag = new Tag(tagStr);
-                                }
-                                //book.addTag(new Tag(tagStr)); // TODO: check if tag exists in DB?  crashes, unique constraint
-                                bookService.addTag(book.getId(), tag);
-                            }
-                        }
-                    }
-
+                    bookService.addTagList(book.getId(),tagList);
                 }
+            }  // while each line
 
-            }
             reader.close();
             csvReader.close();
         } catch (IOException e) {
