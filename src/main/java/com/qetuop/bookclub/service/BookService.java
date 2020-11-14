@@ -46,34 +46,27 @@ public class BookService {
     }
 
     public List<Book> findByAuthor(String author) {
-        System.out.println("BookService:findByAuthor: " + author);
         List<Book> books = (List<Book>) repository.findByAuthor(author);
         return books;
     }
 
     public List<Book> findBySeriesName(String seriesName) {
-        System.out.println("BookService:findBySeries: " + seriesName);
         List<Book> books = (List<Book>) repository.findBySeriesName(seriesName);
         return books;
     }
 
     public Book findByAuthorAndTitle(String author, String title) {
-        System.out.println("BookService:findByAuthorAndTitle: " + author +":"+ title);
         Book book = repository.findByAuthorAndTitle(author,title);
         return book;
     }
 
     public List<Book> retrieveByTag(String tag) {
-        System.out.println("retrieveByTag: " + tag);
         List<Book> books = (List<Book>) repository.retrieveByTag(tag);
-        System.out.println("retrieveByTag FOUND: " + books.size());
         return books;
     }
 
     public List<Book> findByNameEndsWith(String chars) {
-        System.out.println("findByNameEndsWith: " + chars);
         List<Book> books = (List<Book>) repository.findByNameEndsWith(chars);
-        System.out.println("findByNameEndsWith FOUND: " + books.size());
         return books;
     }
 
@@ -117,12 +110,9 @@ public class BookService {
     }
 
     public void addTagList(Long id, List<String> addTagList) {
-        System.out.println("addTagList: " + addTagList.size());
         for (String tagString : addTagList) {
-            System.out.println("addTagList: " + id + ":" + tagString);
             if (!tagString.isEmpty()) {
                 this.addTag(id, tagString);
-                System.out.println("ADDED!");
             }
         }
     }
@@ -139,7 +129,6 @@ public class BookService {
         Book book = repository.findById(id).get();
 
         // use existing tag if exists
-        System.out.println("BookService::addTag:"+(tagService==null));
         Tag tag = tagService.findByValue(strTag);
         if ( tag == null) {
             tag = new Tag(strTag);

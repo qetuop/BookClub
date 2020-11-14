@@ -30,7 +30,6 @@ public class TagService {
     }
 
     public Tag findByValue(String value) {
-        System.out.println("TagService:findByValue: " + value);
         Tag tag = (Tag) repository.findByValue(value);
         return tag;
     }
