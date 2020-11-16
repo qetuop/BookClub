@@ -48,11 +48,16 @@ public class AppStartupRunner implements ApplicationRunner {
 		Config config = new Config();
 
 		// TODO: figure out if i should include trailing slash or not, it affects the split below, just be consistent
-		String rootDir = "/home/brian/Projects/testdir/audio books/";
+
+		// ***** MAKE SURE THERE IS A TRAILING '/'  TODO: figure out why and how to fix - the split on file.separator
+
+		String rootDir = "/audiobooks/";
+		//rootDir = "/home/brian/Projects/testdir/audio books/";
 		//rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
 		//rootDir = "/home/brian/Projects/testdir/test/";
-		rootDir = "/home/brian/Projects/testdir/simple/";
+		//rootDir = "/home/brian/Projects/testdir/simple/";
 		//rootDir = "/media/NAS/audiobooks/";
+		//rootDir = "/media/NAS/audiobooks/Warhammer/";
 
 		// TODO: add other mock data - ignore dir, last mode, etc. - need to persist this through  restarts...
 		config.setLastScanTime(0l);
@@ -61,6 +66,6 @@ public class AppStartupRunner implements ApplicationRunner {
 		config.setAudioRootDir(rootDir);
 		configService.save(config);
 
-		scanner.scan(true);
+		//scanner.scan(true);
 	}
 }

@@ -1,0 +1,34 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+<a href="showBooks">Show Books</a>
+<br>
+<a href="showSeries">Show Series</a>
+<br>
+<a href="showBookTable">Show Table</a>
+<br>
+
+<div>
+	<form method="POST" action="/scan">
+		<p>Scan: <input type="submit" name="Scan" value=false /></p>
+	</form>
+</div>
+<div>
+	<form method="POST" action="/scan" >
+		<p>Force Scan: <input type="submit" name="Scan" value=true /></p>
+	</form>
+</div>
+
+<div>
+	<form method="POST" action="/backup">
+		<p><input type="submit" value="Backup" /></p>
+	</form>
+</div>
+
+<div>
+	<form method="POST" action="/restore">
+		<p><input type="submit" value="Restore" /></p>
+	</form>
+</div>
+
+</body>
+</html>

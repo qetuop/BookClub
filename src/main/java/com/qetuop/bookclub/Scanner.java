@@ -51,7 +51,7 @@ import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 @Component
 public class Scanner {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final List<String> ignoreList = new ArrayList<>(Arrays.asList("@eaDir", "#recycle", "_temp", "_organize", "Warhammer", "_cleanup"));
+    private static final List<String> ignoreList = new ArrayList<>(Arrays.asList("@eaDir", "#recycle", "_temp", "_organize", "_cleanup"));
 
     @Autowired
     private StorageService storageService;  // this will be used once I start scanning the dirs over the network and not local
@@ -105,9 +105,11 @@ public class Scanner {
         String fullPathString = filePath.toString().strip();
 
         String tmpString = fullPathString.replace(rootDir, "");
+        System.out.println("tmpString:*"+tmpString+"*");
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String[] splitList = tmpString.split(pattern);
 
+        System.out.println("splitList.length: " + splitList.length);
         System.out.println("\t\t*" + StringUtils.join(splitList, "|") + "*");
 
         // standalone book
@@ -127,8 +129,6 @@ public class Scanner {
 
         author = splitList[0];
 
-        System.out.println("AUTHOR: " + author);
-
         // HACK check - ignore these dirs TODO: fix this
         if (ignoreList.contains(author)) {
             return;
@@ -136,12 +136,13 @@ public class Scanner {
 
         // single book
         if (splitList.length == 3) {
+            System.out.println("SINGLE BOOK");
             title = splitList[1];
             path = rootDir + "/" + author + "/" + title;
         }
         // series
         else if (splitList.length == 4) {
-
+            System.out.println("SERIES");
             seriesName = splitList[1];
             String titleFull = splitList[2];
 

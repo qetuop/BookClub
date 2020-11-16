@@ -69,6 +69,10 @@ public class BookController {
     }*/
 
     @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+    /*
     public String listUploadedFiles(Model model) throws IOException {
         System.out.println("HERE:GET/ listUploadedFiles");
 
@@ -94,7 +98,7 @@ public class BookController {
 
         return "redirect:/";
     }
-
+*/
     @GetMapping(path = "/books/{id}/cover")
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
         Book book = bookService.findById(Long.parseLong(id));
