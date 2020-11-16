@@ -24,6 +24,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 public class BackRestore {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final String path = "/data/backup/";
     private static final String filename = "book_club_backup.csv";  // TODO: this will need to be a config item
 
     @Autowired
@@ -40,14 +41,18 @@ public class BackRestore {
     }
 
     public void backup() {
-        System.out.println("BackRestore::backup");
+        String filepath = path+filename;
+        System.out.println("BackRestore::backup:" + filepath);
 
         List<Book> books = (List<Book>) bookService.findAll();
         books.sort(Comparator.comparing(Book::getAuthor));
 
+
+
+
         try {
 
-            FileWriter myWriter = new FileWriter(filename);
+            FileWriter myWriter = new FileWriter(filepath);
 
             final String bookString = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n";
 
@@ -88,7 +93,9 @@ public class BackRestore {
     }
 
     public void restore() {
-        System.out.println("BackRestore::restore");
+        String filepath = path+filename;
+        System.out.println("BackRestore::restore:" + filepath);
+
         // read each line
 
         // search for existing book based on....title/author
@@ -109,8 +116,7 @@ public class BackRestore {
 
         try {
             //Reader reader = Files.newBufferedReader(Paths.get(ClassLoader.getSystemResource(filename).toURI()));
-            System.out.println("Restoring: " + Paths.get(filename));
-            Reader reader = Files.newBufferedReader(Paths.get(filename));
+            Reader reader = Files.newBufferedReader(Paths.get(filepath));
 
             List<String[]> list = new ArrayList<>();
             CSVReader csvReader = new CSVReader(reader);
