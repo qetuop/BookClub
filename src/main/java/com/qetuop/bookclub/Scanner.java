@@ -304,6 +304,8 @@ public class Scanner {
         config.setLastScanTime(Instant.now().toEpochMilli());
         configService.save(config);
 
+        System.out.println("Scanner:Scan():complete!");
+
 
         /*// TAG TEST
         Book book = null;
