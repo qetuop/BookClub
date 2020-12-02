@@ -52,19 +52,23 @@ public class AppStartupRunner implements ApplicationRunner {
 		// ***** MAKE SURE THERE IS A TRAILING '/'  TODO: figure out why and how to fix - the split on file.separator
 
 		String rootDir = "/audiobooks/";
-		//rootDir = "/home/brian/Projects/testdir/audio books/";
+		//rootDir = "/audiobooks/Terry Pratchett/";
+		rootDir = "/home/brian/Projects/testdir/audio books/";
 		//rootDir = "/home/brian/Projects/testdir/fake_audio_books/";
 		//rootDir = "/home/brian/Projects/testdir/test/";
 		//rootDir = "/home/brian/Projects/testdir/simple/";
 		//rootDir = "/media/NAS/audiobooks/";
 		//rootDir = "/media/NAS/audiobooks/Warhammer/";
 
+		//bookService.deleteAll();
+
 		// TODO: add other mock data - ignore dir, last mode, etc. - need to persist this through  restarts...
-		config.setLastScanTime(0l);
+		//config.setLastScanTime(0l);
+		//config.setAudioRootDir(rootDir);
+		//configService.save(config);
 
-
-		config.setAudioRootDir(rootDir);
-		configService.save(config);
+		//configService.setLastScanTime(0L);
+		configService.setAudioRootDir(rootDir);
 
 		//scanner.scan(true);
 	}

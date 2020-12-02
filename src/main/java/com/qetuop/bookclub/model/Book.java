@@ -23,6 +23,9 @@ import java.util.List;
 @Data
 @Entity // This tells Hibernate to make a table out of this class, use @Table(name = "book") to specify the table name
 //@Table(name = "book")
+
+//@Table(indexes = { @Index(name = "AuthorTitle", columnList = "author,title") },
+//        uniqueConstraints = @UniqueConstraint(columnNames={"author", "title"}) )
 public class Book {
 
     public enum Type {

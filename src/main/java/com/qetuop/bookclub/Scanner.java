@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Stopwatch;
+
 //import com.google.common.io.Resources;
 
 import com.qetuop.bookclub.model.Config;
@@ -28,6 +30,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import org.springframework.util.StringUtils;
@@ -62,6 +65,10 @@ public class Scanner {
     @Autowired
     private ConfigService configService;
 
+    private Hashtable scannedBooks = new Hashtable();
+    private List<Book> bookList = new ArrayList();
+    int bookCount = 0;
+
 /*    public Scanner(StorageService storageService, BookService bookService, TagService tagService) {
         this.storageService = storageService;
         this.bookService = bookService;
@@ -91,6 +98,14 @@ public class Scanner {
     // input should be a non-empty directory - contains files not subdirs
     // TODO: pass in book type expected?
     public void parsePath(List<Path> filePaths, String rootDir) {
+        //StopWatch watch = new StopWatch();
+        //watch.start();
+
+
+
+
+
+        //System.out.println("Scanner:parsePath() ");
 
         // find largest image file, store for cover
         List<Path> images = filePaths.stream()
@@ -100,17 +115,17 @@ public class Scanner {
 
         // get one file to parse out most of the book info (contained in dir path)
         Path filePath = filePaths.get(0);
-        System.out.println("parsePath::" + filePath);
+        //System.out.println("parsePath::" + filePath);
 
         String fullPathString = filePath.toString().strip();
 
         String tmpString = fullPathString.replace(rootDir, "");
-        System.out.println("tmpString:*"+tmpString+"*");
+        //System.out.println("tmpString:*"+tmpString+"*");
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String[] splitList = tmpString.split(pattern);
 
-        System.out.println("splitList.length: " + splitList.length);
-        System.out.println("\t\t*" + StringUtils.join(splitList, "|") + "*");
+        //System.out.println("splitList.length: " + splitList.length);
+        //System.out.println("\t\t*" + StringUtils.join(splitList, "|") + "*");
 
         // standalone book
         // |Brian Herbert|Paul of Dune|Paul of Dune.jpg
@@ -136,13 +151,13 @@ public class Scanner {
 
         // single book
         if (splitList.length == 3) {
-            System.out.println("SINGLE BOOK");
+            //System.out.println("SINGLE BOOK");
             title = splitList[1];
             path = rootDir + "/" + author + "/" + title;
         }
         // series
         else if (splitList.length == 4) {
-            System.out.println("SERIES");
+            //System.out.println("SERIES");
             seriesName = splitList[1];
             String titleFull = splitList[2];
 
@@ -176,7 +191,7 @@ public class Scanner {
                 }
                 path = rootDir + "/" + author + "/" + seriesName + " - " + seriesNumber + "/" + title;
             } else {
-                System.out.println("\t\tCan't parse this path");
+                //System.out.println("\t\tCan't parse this path");
                 return;
             }
         } // series
@@ -194,15 +209,32 @@ public class Scanner {
 
                 Book book = new Book(title, author, path, cover, image, seriesName, seriesNumber, false);
 
-                // HACK
-                book.setBookType(Book.Type.audio);
+                // Book already exists in DB = dont add
+                // TODO: HashTAble only catches dupes on initial scan, won't protect on additional scans
+                // ex: if updating
+                //if ( scannedBooks.containsKey(author+title) == true ) {
 
-                Book tmpBook = bookService.findByAuthorAndTitle(author, title);
+                    book.setBookType(Book.Type.audio);
+                    Stopwatch bookSearchTimer = Stopwatch.createStarted();
+                    Book tmpBook = bookService.findByAuthorAndTitle(author, title); // TODO: this expects only only author/title row in DB, will fail otherwise
+                    //Book tmpBook = bookService.findByAuthorTitle(author, title); // TODO: this expects only only author/title row in DB, will fail otherwise
+                    System.out.println("Scanner:search     :" + bookSearchTimer.stop());
+                    scannedBooks.put(author+title,1);
+
+
+
                 if (tmpBook != null) {
-                    System.out.println(String.format("BOOK %s %s is already in DB", title, author));
+                    //System.out.println(String.format("BOOK %s %s is already in DB", title, author));
+
+                // Book is not in DB = add
                 } else {
-                    book = bookService.save(book);
-                    System.out.println("\t\tNew book: " + book.getAuthor() + ", " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
+                    book.setBookType(Book.Type.audio);
+                    book.setUpdated(Instant.now().toEpochMilli());
+                    //Stopwatch saveTimer = Stopwatch.createStarted();
+                    //book = bookService.save(book);
+                    bookList.add(book);
+                    //System.out.println("\t\tNew book: " + book.getAuthor() + ", " + book.getTitle() + ", " + book.getSeriesName() + ", " + book.getSeriesNumber());
+                    //System.out.println("Scanner:save book():" + saveTimer.stop() + ":" +book.getTitle());
                 }
             } catch (final FileNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -214,17 +246,26 @@ public class Scanner {
                 e.printStackTrace();
             }
 
+
+
+
+        //System.out.println("Scanner:parsePath():" + timer.stop());
     } // parsePath
 
     public void scan(boolean forceScan) {
+        Stopwatch scanTimer = Stopwatch.createStarted();
         System.out.println("Scanner:Scan() " + forceScan);
-        // TODO: this is temporary
-        //storageService.deleteAll();
-        //storageService.init();
 
-        Config config = configService.findById(1);
-        String rootDir = config.getAudioRootDir();
-        Long lastScan = config.getLastScanTime();
+        // clear book table and config.lastScan
+        if ( forceScan == true ) {
+            bookService.deleteAll();
+            configService.setLastScanTime(0l);
+            //configService.save(config);
+        }
+
+        //Config config = configService.findById(1);
+        String rootDir = configService.getAudioRootDir();
+        Long lastScan = configService.getLastScanTime();
 
         System.out.println("ROOT DIR: " + rootDir);
         System.out.println(lastScan + " : " + LocalDateTime.ofInstant(Instant.ofEpochMilli(lastScan), ZoneId.systemDefault()));
@@ -238,22 +279,25 @@ public class Scanner {
                 // This will skip visiting a dir listed in the ignore list.
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    System.out.println(dir.toFile().lastModified() + " : " + dir.toFile().toString() );
+                    System.out.println("preVisitDirectory: " + dir);
+                    //System.out.println(dir.toFile().lastModified() + " : " + dir.toFile().toString() );
 
                     if (ignoreList.contains(dir.getFileName().toString())) {
-                        System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
+                        //System.out.println(String.format("DIR %s is in ignore list", dir.getFileName()));
                         return SKIP_SUBTREE;
                     }
 
                     if ( dir.getFileName().toString().startsWith("_") ) {
-                        System.out.println(String.format("Dir %s has an ignore pattern", dir.getFileName()));
+                        //System.out.println(String.format("Dir %s has an ignore pattern", dir.getFileName()));
                         return SKIP_SUBTREE;
                     }
+
                     return CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    System.out.println("postVisitDirectory: " + dir);
                     // create list of files in dir to process
                     // TODO: filter based on expected type (mp3, jpg, epub)
 
@@ -268,16 +312,15 @@ public class Scanner {
                     // skip *files* whose mod date is < the last scan date
                     // the dir mod date does NOT update if sub file has updated  TODO: check this for windows (all linux FS>)
 
-                    if ( !forceScan ) {
+                    //if ( !forceScan ) {
                         if (dir.toFile().lastModified() < lastScan) {
                             System.out.println("TOO OLD: " + dir.toFile().lastModified() + " : " + Instant.ofEpochMilli(dir.toFile().lastModified()));
-                            return CONTINUE; // don't skip subtree
+                            return CONTINUE; // don't skip subtree --> author dir may be old but new books added
                         }
-                    }
+                    //}
 
 
-                    // scan this dir, add files that:
-                    // are not dirs
+                    // scan this dir, add files that: are not dirs, ?
                     try {
                         //Files.list(dir).forEach(c -> System.out.println(c.toFile().lastModified()) );
 
@@ -285,10 +328,21 @@ public class Scanner {
                                 .filter(p -> !p.toFile().isDirectory())
                                 .collect(Collectors.toList());
 
-                        // do mod date check at dir level so all files get added
-                        //.filter(p -> p.toFile().lastModified() > lastMod.toEpochMilli())
                         if ( !files.isEmpty() ) {
+
+                            // this will create Book objects and add to bookList
+                            Stopwatch parsePathTimer = Stopwatch.createStarted();
                             parsePath(files, rootDir);
+                            System.out.println("Scanner:parsePath():" + "(" +bookList.size() + "):" + parsePathTimer.stop());
+
+                            // write to DB in batches of 50
+                            if ( bookList.size() % 15 == 0) {
+                                bookCount += bookList.size();
+                                Stopwatch saveTimer = Stopwatch.createStarted();
+                                bookService.saveAll(bookList);
+                                bookList.clear();
+                                System.out.println("Scanner:save():complete!: (" + bookCount + "):" + saveTimer.stop());
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -301,61 +355,15 @@ public class Scanner {
             e.printStackTrace();
         }
 
-        config.setLastScanTime(Instant.now().toEpochMilli());
-        configService.save(config);
+        // Write leftover books to DB
+        bookCount += bookList.size();
+        Stopwatch saveTimer = Stopwatch.createStarted();
+        bookService.saveAll(bookList);
+        System.out.println("Scanner:save():complete!: (" + bookCount + "):" + saveTimer.stop());
 
-        System.out.println("Scanner:Scan():complete!");
+        configService.setLastScanTime(Instant.now().toEpochMilli());
 
-
-        /*// TAG TEST
-        Book book = null;
-        Tag fantTag = tagService.findByValue("Fantasy");
-        Tag sciTag = tagService.findByValue("SciFi");
-        if ( fantTag == null ) {
-            fantTag = new Tag("Fantasy");
-        }
-        if ( sciTag == null ) {
-            sciTag = new Tag("SciFi");
-        }
-
-        book = bookService.findById(2);
-        book.addTag(sciTag);
-        book = bookService.save(book);
-
-        book = bookService.findById(3);
-        book.addTag(fantTag);
-        book = bookService.save(book);
-
-        book = bookService.findById(4);
-        book.addTag(fantTag);
-        book.addTag(sciTag);
-        book = bookService.save(book);
-        
-
-        System.out.println("\n\n--------------------------------------\n\n");
-        System.out.println("TEST tags");
-        book = bookService.findById(2);
-
-        Set<Tag> tags = book.getTags();
-        System.out.println("Result len: "+tags.size());
-        for (Tag tag0 : tags) {
-            System.out.println("TAG: " + tag0.getId() + ":" + tag0.getValue());
-        }
-
-        System.out.println("\n\n--------------------------------------\n\n");
-
-        System.out.println("TYRING TO FIND TAG");
-        List<Book> books = bookService.retrieveByTag("Fantasy");
-        System.out.println("Result len: "+books.size());
-        for (Book book1 : books) {
-            System.out.println("book1: " + book1.getTitle());
-        }
-        System.out.println("\n\n--------------------------------------\n\n");
-        System.out.println("PRINT ALL TAGS");
-        List<Tag> allTags = tagService.findAll();
-        for ( Tag tag2 : allTags ) {
-            System.out.println("Tag(" + tag2.getId() + "): " + tag2.getValue());
-        }*/
-
+        System.out.println("Scanner:Scan():complete!:" + scanTimer.stop());
     } // scan
+
 } // class Scanner

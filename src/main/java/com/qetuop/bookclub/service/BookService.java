@@ -35,6 +35,13 @@ public class BookService {
         return repository.save(book);
     }
 
+    public Iterable<Book> saveAll(Iterable<Book> books) {
+        //book.setUpdated(Instant.now().toEpochMilli());
+        //book.setUpdated(LocalDateTime.now());
+        //DataAccessException
+        return repository.saveAll(books);
+    }
+
     public List<Book> findAll() {
         List<Book> books = (List<Book>) repository.findAll();
         return books;
@@ -59,7 +66,12 @@ public class BookService {
         Book book = repository.findByAuthorAndTitle(author,title);
         return book;
     }
-
+/*
+    public Book findByAuthorTitle(String author, String title) {
+        Book book = repository.findByAuthorTitle(author,title);
+        return book;
+    }
+*/
     public List<Book> retrieveByTag(String tag) {
         List<Book> books = (List<Book>) repository.retrieveByTag(tag);
         return books;
@@ -147,6 +159,11 @@ public class BookService {
             book.removeTag(tag);
             repository.save(book);
         }
+    }
+
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
     }
 
     /*  TODO: do i need these?

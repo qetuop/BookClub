@@ -2,6 +2,7 @@ package com.qetuop.bookclub.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -70,7 +71,17 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     // org.springframework.orm.jpa.JpaSystemException: Unable to access lob stream
     // when calling findByAuthor.  why?!?
 
-    @Query("SELECT b FROM Book b WHERE b.author = :author AND b.title = :title")
-    Book findByAuthorAndTitle(@Param("author") String author, @Param("title") String title );
+    //@Query("SELECT b FROM Book b WHERE b.author = :author AND b.title = :title")
+    //Book findByAuthorAndTitle(@Param("author") String author, @Param("title") String title );
+    // see https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
+    // sytnax needs to be correct for code to be generated
+    //@Query("SELECT b FROM Book b USE INDEX(AuthorTitle) WHERE b.author = :author AND b.title = :title")
+    Book findByAuthorAndTitle(String author,String title);
+
+    //Book findByAuthorTitle(String author,String title);
+
+    //IDX_MYIDX1
+
+    void deleteAll();
 
 }
